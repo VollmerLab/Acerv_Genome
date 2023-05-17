@@ -3,7 +3,7 @@
 ##TODO - add clade markings for within acropora(?)
 ##TODO - Make axis title (x MYA) 
 ##TODO - add cafe +/- to tip labels
-##TODO - what to do about groups with too big a spread... especially since both Tolls are lost > 100 but cafe wont fit (at least initial model) with cutoff of 200
+##TODO - what to do about groups with too big a spread... especially since both Tolls are lost > 100 but cafe wont fit (at least initial model) with cutoff of 200 - works with uniform lambda??
 
 #Cafe results. If "family p" is non-significant then no test for significance of individual nodes
 
@@ -142,21 +142,6 @@ pathway_changes %>%
             total_paths = n_distinct(FamilyID),
             untested_paths = n_distinct(FamilyID[is.na(pvalue)]),
             .groups = 'drop') %>%
-  # filter(tested_paths < sig_paths)
-  
-  ggplot(aes(x = sig_paths / tested_paths, y = minor_category)) +
-  geom_segment(aes(xend = 0, yend = minor_category)) +
-  geom_point() +
-  facet_wrap(~major_category, scales = 'free_y')
-
-pathway_changes %>%
-  # filter(minor_category == 'Development and regeneration') %>%
-  group_by(major_category, minor_category) %>%
-  summarise(sig_paths = n_distinct(FamilyID[pvalue < 0.05 & !is.na(pvalue)]),
-            tested_paths = n_distinct(FamilyID[!is.na(pvalue)]),
-            total_paths = n_distinct(FamilyID),
-            untested_paths = n_distinct(FamilyID[is.na(pvalue)]),
-            .groups = 'drop') %>%
   select(-untested_paths) %>%
   pivot_longer(cols = ends_with('paths')) %>%
   mutate(name = str_remove(name, '_paths'),
@@ -171,10 +156,13 @@ pathway_changes %>%
                position = position_dodge(0.5)) +
   geom_point(position = position_dodge(0.5)) +
   facet_wrap(~major_category, scales = 'free_y') +
+  labs(x = 'Number of KEGG Pathways',
+       y = NULL,
+       colour = NULL) +
   theme_classic() +
   theme(panel.background = element_rect(colour = 'black'),
         strip.background = element_blank())
-
+ggsave('../Results/significant_change_pathways.png', height = 7, width = 10)
 
 #### Read in Cafe Results - KEGG Paths ####
 cafe_trees <- read_lines('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/errorModel/Base_asr.tre') %>%
