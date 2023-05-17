@@ -1,0 +1,207 @@
+class,major_category,minor_category,gene_id,which_direction,gene,mRNA
+Unique,Metabolism,Lipid metabolism,Acer_00010424,Excess,NA,"Dbxref=GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR001841,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013083,InterPro:IPR013762,PFAM:PF00589"
+Unique,Metabolism,Lipid metabolism,Acer_00023278,Excess,pol_123,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Unique,Metabolism,Lipid metabolism,Acer_00016834,Excess,pol_86,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Unique,Metabolism,Lipid metabolism,Acer_00007184,Excess,pol_0,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Unique,Metabolism,Lipid metabolism,Acer_00002208,Excess,pol_56,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Unique,Metabolism,Lipid metabolism,Acer_00002299,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00033220,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00033020,Excess,NA,
+Duplicate,Metabolism,Lipid metabolism,Acer_00018606,Excess,NA,"Dbxref=CDD:cd09275,GO:0003676,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR012337,InterPro:IPR013762,InterPro:IPR036397,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00016639,Excess,pol_82,"product=Gag-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00030609,Excess,NA,"Dbxref=GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR044068"
+Duplicate,Metabolism,Lipid metabolism,Acer_00027274,Excess,NA,"Dbxref=GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762"
+Duplicate,Metabolism,Lipid metabolism,Acer_00032032,Excess,NA,"Dbxref=CDD:cd00397,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762"
+Duplicate,Metabolism,Lipid metabolism,Acer_00022555,Excess,NA,"Dbxref=CDD:cd00397,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00018883,Excess,NA,
+Duplicate,Metabolism,Lipid metabolism,Acer_00003837,Excess,NA,"Dbxref=GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR002104,InterPro:IPR011010,InterPro:IPR013762,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00032422,Excess,ORF_2,"product=Enzymatic polyprotein;Dbxref=CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00028885,Excess,NA,"Dbxref=GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00023350,Excess,gag-pol_5,"product=Gag-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00008111,Excess,pol_8,"product=Gag-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00027962,Excess,pol_155,"product=Gag-Pol polyprotein;Dbxref=CDD:cd03714,InterPro:IPR000477,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00003838,Excess,POL_12,"product=Polyprotein P3;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003676,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR036397,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00032011,Excess,NA,"Dbxref=CDD:cd09275,InterPro:IPR000477,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00021033,Excess,POL_13,"product=Polyprotein P3;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003676,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR036397,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00031143,Excess,POL_2,"product=Polyprotein P3;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00030579,Excess,pol_18,"product=Retrovirus-related Pol polyprotein from transposon gypsy;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00018259,Excess,NA,"Dbxref=CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00005879,Excess,NA,"Dbxref=GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00008817,Excess,NA,"Dbxref=CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00028204,Excess,NA,"Dbxref=CDD:cd09275,GO:0003676,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR036397,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00018224,Excess,POL_9,"product=Polyprotein P3;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00009788,Excess,NA,"Dbxref=CDD:cd09275,GO:0003676,InterPro:IPR012337,InterPro:IPR036397"
+Duplicate,Metabolism,Lipid metabolism,Acer_00027809,Excess,NA,"Dbxref=CDD:cd03714,InterPro:IPR000477,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00003489,Excess,NA,Dbxref=CDD:cd09275
+Duplicate,Metabolism,Lipid metabolism,Acer_00017842,Excess,CYP10_1,"product=Cytochrome P450 10;Dbxref=GO:0004497|GO:0005506|GO:0016705|GO:0020037,InterPro:IPR001128,InterPro:IPR002401,InterPro:IPR036396,PFAM:PF00067"
+Duplicate,Metabolism,Lipid metabolism,Acer_00017849,Excess,CYP10_5,"product=Cytochrome P450 10;Dbxref=GO:0004497|GO:0005506|GO:0016705|GO:0020037,InterPro:IPR001128,InterPro:IPR002403,InterPro:IPR036396,PFAM:PF00067"
+Duplicate,Metabolism,Lipid metabolism,Acer_00012555,Excess,OTU10_2,"product=OVARIAN TUMOR DOMAIN-containing deubiquitinating enzyme 10;Dbxref=CDD:cd09275,GO:0003676,GO:0015074,InterPro:IPR001584,InterPro:IPR003323,InterPro:IPR012337,InterPro:IPR036397,PFAM:PF02338"
+Duplicate,Metabolism,Lipid metabolism,Acer_00033273,Excess,NA,"Dbxref=GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR011010,InterPro:IPR013762"
+Duplicate,Metabolism,Lipid metabolism,Acer_00018391,Excess,pol_93,"product=Gag-Pol polyprotein (Fragment);Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00029275,Excess,pol_3,"product=Gag-Pol polyprotein (Fragment);Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00001656,Excess,pol_53,"product=Gag-Pol polyprotein (Fragment);Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00015646,Excess,pol_79,"product=Gag-Pol polyprotein (Fragment);Dbxref=CDD:cd03714,CDD:cd09275,InterPro:IPR000477,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00007240,Excess,NA,Dbxref=InterPro:IPR010998
+Duplicate,Metabolism,Lipid metabolism,Acer_00022735,Excess,NA,
+Duplicate,Metabolism,Lipid metabolism,Acer_00030644,Excess,NA,Dbxref=InterPro:IPR010998
+Duplicate,Metabolism,Lipid metabolism,Acer_00030562,Excess,pol_16,"product=Pro-Pol polyprotein;Dbxref=CDD:cd01647,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00001927,Excess,pol_54,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00018936,Excess,pol_99,"product=Pro-Pol polyprotein;Dbxref=CDD:cd01647,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00033259,Excess,pol_52,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,InterPro:IPR000477,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00021060,Excess,NA,"Dbxref=CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR002104,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043502,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00018704,Excess,NA,
+Duplicate,Metabolism,Lipid metabolism,Acer_00025325,Excess,NA,
+Duplicate,Metabolism,Lipid metabolism,Acer_00010424,Excess,NA,"Dbxref=GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR001841,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013083,InterPro:IPR013762,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00023278,Excess,pol_123,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Lipid metabolism,Acer_00016834,Excess,pol_86,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00007184,Excess,pol_0,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,InterPro:IPR000477,InterPro:IPR010998,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078"
+Duplicate,Metabolism,Lipid metabolism,Acer_00002208,Excess,pol_56,"product=Pro-Pol polyprotein;Dbxref=CDD:cd03714,CDD:cd09275,GO:0003677,GO:0003677|GO:0006310|GO:0015074,InterPro:IPR000477,InterPro:IPR002104,InterPro:IPR010998,InterPro:IPR011010,InterPro:IPR013762,InterPro:IPR043128,InterPro:IPR043502,PFAM:PF00078,PFAM:PF00589"
+Duplicate,Metabolism,Nucleotide metabolism,Acer_00017556,Dearth,ZNF862_14,"product=Zinc finger protein 862;Dbxref=GO:0046983,InterPro:IPR008906,InterPro:IPR012337,PFAM:PF05699"
+Duplicate,Metabolism,Nucleotide metabolism,Acer_00014301,Dearth,ZNF862_11,"product=Zinc finger protein 862;Dbxref=InterPro:IPR006580,InterPro:IPR012337,InterPro:IPR025398,PFAM:PF14291"
+Duplicate,Metabolism,Nucleotide metabolism,Acer_00018703,Dearth,ZNF862_17,product=Zinc finger protein 862;Dbxref=InterPro:IPR012337
+Duplicate,Metabolism,Nucleotide metabolism,Acer_00005725,Dearth,DPYD_0,"product=Dihydropyrimidine dehydrogenase [NADP(+)];Dbxref=GO:0051536,InterPro:IPR009051"
+Duplicate,Metabolism,Nucleotide metabolism,Acer_00005721,Dearth,dpyd-1,"product=Dihydropyrimidine dehydrogenase [NADP(+)];Dbxref=GO:0051536,InterPro:IPR009051"
+Duplicate,Organismal Systems,Sensory system,Acer_00018686,Excess,NA,
+Duplicate,Organismal Systems,Sensory system,Acer_00033612,Excess,NA,
+Duplicate,Organismal Systems,Sensory system,Acer_00034184,Excess,Cnr2_0,"product=Cannabinoid receptor 2;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Sensory system,Acer_00011137,Excess,Hrh2_5,"product=Histamine H2 receptor;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Sensory system,Acer_00011140,Excess,MC5R_0,"product=Melanocortin receptor 5;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Sensory system,Acer_00011142,Excess,Hrh2_6,"product=Histamine H2 receptor;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Sensory system,Acer_00017452,Excess,Cnr2_2,"product=Cannabinoid receptor 2;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Sensory system,Acer_00017454,Excess,Cnr2_1,"product=Cannabinoid receptor 2;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Sensory system,Acer_00014104,Excess,FANA,"product=FMRFamide-activated amiloride-sensitive sodium channel;Dbxref=GO:0005272|GO:0006814|GO:0016020,InterPro:IPR001873,PFAM:PF00858"
+Duplicate,Organismal Systems,Sensory system,Acer_00014108,Excess,mec-10,"product=Degenerin mec-10;Dbxref=GO:0005272|GO:0006814|GO:0016020,InterPro:IPR001873,PFAM:PF00858"
+Duplicate,Organismal Systems,Sensory system,Acer_00012680,Excess,NA,
+Duplicate,Organismal Systems,Sensory system,Acer_00011026,Excess,NA,
+Duplicate,Organismal Systems,Sensory system,Acer_00012681,Excess,KCNB1_1,"product=Potassium voltage-gated channel subfamily B member 1;Dbxref=GO:0015276|GO:0016020,InterPro:IPR001320,InterPro:IPR013099,PFAM:PF00060,PFAM:PF07885"
+Duplicate,Organismal Systems,Sensory system,Acer_00033589,Excess,KCNB1_0,"product=Potassium voltage-gated channel subfamily B member 1;Dbxref=GO:0015276|GO:0016020,InterPro:IPR001320,InterPro:IPR013099,PFAM:PF00060,PFAM:PF07885"
+Duplicate,Organismal Systems,Digestive system,Acer_00018686,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00033612,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00021178,Excess,DMBT1_11,"product=Deleted in malignant brain tumors 1 protein;Dbxref=CDD:cd00041,GO:0005044|GO:0016020,GO:0016020,InterPro:IPR000859,InterPro:IPR001190,InterPro:IPR017448,InterPro:IPR035914,InterPro:IPR036772,PFAM:PF00431,PFAM:PF00530"
+Duplicate,Organismal Systems,Digestive system,Acer_00025422,Excess,DMBT1_13,"product=Deleted in malignant brain tumors 1 protein;Dbxref=CDD:cd00041,GO:0005044|GO:0016020,GO:0016020,InterPro:IPR000859,InterPro:IPR001190,InterPro:IPR017448,InterPro:IPR035914,InterPro:IPR036772,PFAM:PF00431,PFAM:PF00530"
+Duplicate,Organismal Systems,Digestive system,Acer_00021175,Excess,DMBT1_9,"product=Deleted in malignant brain tumors 1 protein;Dbxref=CDD:cd00041,GO:0005044|GO:0016020,GO:0016020,InterPro:IPR000859,InterPro:IPR001190,InterPro:IPR017448,InterPro:IPR035914,InterPro:IPR036772,PFAM:PF00431,PFAM:PF00530"
+Duplicate,Organismal Systems,Digestive system,Acer_00021171,Excess,DMBT1_10,"product=Deleted in malignant brain tumors 1 protein;Dbxref=CDD:cd00041,GO:0005044|GO:0016020,GO:0016020,InterPro:IPR000859,InterPro:IPR001190,InterPro:IPR017448,InterPro:IPR035914,InterPro:IPR036772,PFAM:PF00431,PFAM:PF00530"
+Duplicate,Organismal Systems,Digestive system,Acer_00004058,Excess,Dmbt1_4,"product=Deleted in malignant brain tumors 1 protein;Dbxref=GO:0005044|GO:0016020,GO:0016020,InterPro:IPR001190,InterPro:IPR017448,InterPro:IPR036772,PFAM:PF00530"
+Duplicate,Organismal Systems,Digestive system,Acer_00028899,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00024750,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00016675,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00006657,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00015912,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00030729,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00030738,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00006593,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00012225,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00022540,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00018957,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00010009,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00020544,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00010008,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Organismal Systems,Digestive system,Acer_00029622,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00018927,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00024826,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00012680,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00011026,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00012681,Excess,KCNB1_1,"product=Potassium voltage-gated channel subfamily B member 1;Dbxref=GO:0015276|GO:0016020,InterPro:IPR001320,InterPro:IPR013099,PFAM:PF00060,PFAM:PF07885"
+Duplicate,Organismal Systems,Digestive system,Acer_00033589,Excess,KCNB1_0,"product=Potassium voltage-gated channel subfamily B member 1;Dbxref=GO:0015276|GO:0016020,InterPro:IPR001320,InterPro:IPR013099,PFAM:PF00060,PFAM:PF07885"
+Duplicate,Organismal Systems,Digestive system,Acer_00014564,Excess,Baat_0,"product=Bile acid-CoA:amino acid N-acyltransferase;Dbxref=InterPro:IPR014940,InterPro:IPR029058,InterPro:IPR036514,PFAM:PF08840"
+Duplicate,Organismal Systems,Digestive system,Acer_00014467,Excess,Baat_1,"product=Bile acid-CoA:amino acid N-acyltransferase;Dbxref=InterPro:IPR014940,InterPro:IPR029058,PFAM:PF08840"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00017679,Dearth,Notch3_1,"product=Neurogenic locus notch homolog protein 3;Dbxref=CDD:cd00054,GO:0005509,InterPro:IPR000152,InterPro:IPR000742,InterPro:IPR001881,InterPro:IPR018097,PFAM:PF07645"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00010785,Dearth,Galk2_0,"product=N-acetylgalactosamine kinase;Dbxref=InterPro:IPR014721,InterPro:IPR019539,InterPro:IPR019741,InterPro:IPR020568,PFAM:PF10509"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00010788,Dearth,Galk2_2,"product=N-acetylgalactosamine kinase;Dbxref=InterPro:IPR013750,InterPro:IPR036554,PFAM:PF08544"
+Duplicate,Metabolism,Lipid metabolism,Acer_00017728,Excess,NA,"Dbxref=CDD:cd00054,InterPro:IPR000742"
+Duplicate,Organismal Systems,Digestive system,Acer_00016456,Excess,TRPM6_2,"product=Transient receptor potential cation channel subfamily M member 6;Dbxref=CDD:cd04515,GO:0004674|GO:0005524|GO:0006468,InterPro:IPR004166,InterPro:IPR011009,PFAM:PF02816"
+Duplicate,Organismal Systems,Digestive system,Acer_00030564,Excess,TRPM6_0,"product=Transient receptor potential cation channel subfamily M member 6;Dbxref=CDD:cd04515,GO:0004674|GO:0005524|GO:0006468,InterPro:IPR004166,InterPro:IPR011009,PFAM:PF02816"
+Duplicate,Organismal Systems,Digestive system,Acer_00018871,Excess,EEF2K_0,"product=Eukaryotic elongation factor 2 kinase;Dbxref=GO:0004674|GO:0005524|GO:0006468,InterPro:IPR004166,InterPro:IPR011009,PFAM:PF02816"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00023321,Excess,rqh1_1,"product=ATP-dependent DNA helicase hus2/rqh1;Dbxref=GO:0003676|GO:0005524,InterPro:IPR011545,InterPro:IPR014001,InterPro:IPR027417,PFAM:PF00270"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00031935,Excess,RECQL5,"product=ATP-dependent DNA helicase Q5;Dbxref=GO:0003676|GO:0005524,InterPro:IPR011545,InterPro:IPR014001,InterPro:IPR027417,PFAM:PF00270"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00019755,Excess,WRN_6,"product=Bifunctional 3'-5' exonuclease/ATP-dependent helicase WRN;Dbxref=GO:0003676|GO:0005524,InterPro:IPR011545,InterPro:IPR014001,InterPro:IPR027417,PFAM:PF00270"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00005912,Excess,WRN_11,"product=Bifunctional 3'-5' exonuclease/ATP-dependent helicase WRN;Dbxref=GO:0003676,GO:0003676|GO:0005524,InterPro:IPR009057,InterPro:IPR011545,InterPro:IPR014001,InterPro:IPR027417,InterPro:IPR036397,PFAM:PF00270"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00016567,Excess,recQ_7,"product=ATP-dependent DNA helicase RecQ;Dbxref=InterPro:IPR014001,InterPro:IPR027417"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00010890,Excess,BLM_0,product=RecQ-like DNA helicase BLM;Dbxref=InterPro:IPR027417
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00014509,Excess,NA,
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00003486,Excess,ASTE1,"product=Protein asteroid homolog 1;Dbxref=InterPro:IPR026832,InterPro:IPR029060,InterPro:IPR039436,PFAM:PF12813"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00003481,Excess,aste1,"product=Protein asteroid homolog 1;Dbxref=InterPro:IPR026832,InterPro:IPR029060,InterPro:IPR039436,PFAM:PF12813"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00009472,Excess,recQ_3,"product=ATP-dependent DNA helicase RecQ;Dbxref=GO:0003676|GO:0005524,InterPro:IPR011545,InterPro:IPR014001,InterPro:IPR027417,PFAM:PF00270"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00010093,Excess,recQ_4,"product=ATP-dependent DNA helicase RecQ;Dbxref=GO:0003676|GO:0005524,InterPro:IPR011545,InterPro:IPR014001,InterPro:IPR027417,PFAM:PF00270"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00004065,Excess,recQ_10,"product=ATP-dependent DNA helicase RecQ;Dbxref=GO:0003676|GO:0005524,InterPro:IPR011545,InterPro:IPR027417,PFAM:PF00270"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00023963,Excess,FAAP24_2,"product=Fanconi anemia core complex-associated protein 24;Dbxref=GO:0036297|GO:0043240,InterPro:IPR026985,InterPro:IPR040646,PFAM:PF17949"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00023970,Excess,FAAP24_4,"product=Fanconi anemia core complex-associated protein 24;Dbxref=GO:0036297|GO:0043240,InterPro:IPR026985,InterPro:IPR040646,PFAM:PF17949"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00009661,Excess,FAAP24_0,"product=Fanconi anemia core complex-associated protein 24;Dbxref=GO:0036297|GO:0043240,InterPro:IPR010994,InterPro:IPR026985,PFAM:PF14520"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00023967,Excess,FAAP24_3,"product=Fanconi anemia core complex-associated protein 24;Dbxref=GO:0036297|GO:0043240,InterPro:IPR010994,InterPro:IPR026985,PFAM:PF14520"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00023961,Excess,FAAP24_1,"product=Fanconi anemia core complex-associated protein 24;Dbxref=GO:0036297|GO:0043240,InterPro:IPR010994,InterPro:IPR026985,PFAM:PF14520"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00028899,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00024750,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00016675,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00006657,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00015912,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00030729,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00030738,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00006593,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00012225,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00022540,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00018957,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00012680,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00011026,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00012681,Excess,KCNB1_1,"product=Potassium voltage-gated channel subfamily B member 1;Dbxref=GO:0015276|GO:0016020,InterPro:IPR001320,InterPro:IPR013099,PFAM:PF00060,PFAM:PF07885"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00033589,Excess,KCNB1_0,"product=Potassium voltage-gated channel subfamily B member 1;Dbxref=GO:0015276|GO:0016020,InterPro:IPR001320,InterPro:IPR013099,PFAM:PF00060,PFAM:PF07885"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00010009,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00020544,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00010008,Excess,NA,Dbxref=InterPro:IPR013087
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00029622,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00018927,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00024826,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00011231,Excess,QRFPR_5,"product=QRFP-like peptide receptor;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Digestive system,Acer_00011228,Excess,QRFPR_4,"product=QRFP-like peptide receptor;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Digestive system,Acer_00018121,Excess,CTRB_1,"product=Chymotrypsinogen B;Dbxref=CDD:cd00190,GO:0004252|GO:0006508,GO:0016020,InterPro:IPR000998,InterPro:IPR001254,InterPro:IPR001314,InterPro:IPR009003,InterPro:IPR013320,InterPro:IPR018114,InterPro:IPR033116,InterPro:IPR043504,PFAM:PF00089,PFAM:PF00629"
+Duplicate,Organismal Systems,Digestive system,Acer_00033238,Excess,Npffr1_2,"product=Neuropeptide FF receptor 1;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Digestive system,Acer_00033247,Excess,RYa-R_1,"product=RYamide receptor;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Digestive system,Acer_00013818,Excess,QRFPR_13,"product=Pyroglutamylated RF-amide peptide receptor;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Digestive system,Acer_00033251,Excess,QRFPR_7,"product=Pyroglutamylated RF-amide peptide receptor;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Organismal Systems,Digestive system,Acer_00002389,Excess,Cela2a_0,"product=Chymotrypsin-like elastase family member 2A;Dbxref=GO:0004252|GO:0006508,GO:0016020,InterPro:IPR000998,InterPro:IPR001254,InterPro:IPR009003,InterPro:IPR013320,InterPro:IPR018114,InterPro:IPR043504,PFAM:PF00089,PFAM:PF00629"
+Duplicate,Metabolism,Lipid metabolism,Acer_00015456,Excess,Sptlc2_2,"product=Serine palmitoyltransferase 2;Dbxref=GO:0003824,GO:0009058|GO:0030170,GO:0016740,InterPro:IPR001917,InterPro:IPR004839,InterPro:IPR015421,InterPro:IPR015422,InterPro:IPR015424,PFAM:PF00155"
+Duplicate,Metabolism,Lipid metabolism,Acer_00015455,Excess,Sptlc2_1,"product=Serine palmitoyltransferase 2;Dbxref=GO:0003824,GO:0009058|GO:0030170,GO:0016740,InterPro:IPR001917,InterPro:IPR004839,InterPro:IPR015421,InterPro:IPR015422,InterPro:IPR015424,PFAM:PF00155"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00022817,Excess,melC2_2,"product=Tyrosinase;Dbxref=GO:0016491,InterPro:IPR002227,InterPro:IPR008922,PFAM:PF00264"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00022818,Excess,melC2_3,"product=Tyrosinase;Dbxref=CDD:cd00037,GO:0016491,InterPro:IPR000884,InterPro:IPR001304,InterPro:IPR002227,InterPro:IPR008922,InterPro:IPR016186,InterPro:IPR016187,InterPro:IPR036383,PFAM:PF00059,PFAM:PF00090,PFAM:PF00264"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00019381,Excess,USOM5_21,"product=Uncharacterized skeletal organic matrix protein 5;Dbxref=CDD:cd00054,GO:0005509,InterPro:IPR001881,InterPro:IPR003609,InterPro:IPR018097,InterPro:IPR036056,PFAM:PF00024,PFAM:PF07645"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00013046,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00013045,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00025177,Excess,NA,
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00025178,Excess,NA,
+Duplicate,Organismal Systems,Digestive system,Acer_00021547,Excess,IFT172_0,product=Intraflagellar transport protein 172 homolog
+Duplicate,Organismal Systems,Digestive system,Acer_00024600,Excess,IFT172_1,product=Intraflagellar transport protein 172 homolog
+Duplicate,Organismal Systems,Digestive system,Acer_00009121,Excess,NA,
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00017236,Dearth,B3GALT1_2,"product=Beta-1,3-galactosyltransferase 1;Dbxref=GO:0006486|GO:0016020|GO:0016758,InterPro:IPR002659,PFAM:PF01762"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00017238,Dearth,B3GALT1_3,"product=Beta-1,3-galactosyltransferase 1;Dbxref=GO:0006486|GO:0016020|GO:0016758,InterPro:IPR002659,PFAM:PF01762"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00017240,Dearth,B3GALT1_5,"product=Beta-1,3-galactosyltransferase 1;Dbxref=GO:0006486|GO:0016020|GO:0016758,InterPro:IPR002659,PFAM:PF01762"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00017239,Dearth,B3GALT1_4,"product=Beta-1,3-galactosyltransferase 1;Dbxref=GO:0006486|GO:0016020|GO:0016758,InterPro:IPR002659,PFAM:PF01762"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00017241,Dearth,B3GALT1_6,"product=Beta-1,3-galactosyltransferase 1;Dbxref=GO:0006486|GO:0016020|GO:0016758,InterPro:IPR002659,PFAM:PF01762"
+Duplicate,Metabolism,Lipid metabolism,Acer_00014564,Excess,Baat_0,"product=Bile acid-CoA:amino acid N-acyltransferase;Dbxref=InterPro:IPR014940,InterPro:IPR029058,InterPro:IPR036514,PFAM:PF08840"
+Duplicate,Metabolism,Lipid metabolism,Acer_00014467,Excess,Baat_1,"product=Bile acid-CoA:amino acid N-acyltransferase;Dbxref=InterPro:IPR014940,InterPro:IPR029058,PFAM:PF08840"
+Duplicate,Genetic Information Processing,Transcription,Acer_00026074,Dearth,Tacr2_4,"product=Substance-K receptor;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Genetic Information Processing,Transcription,Acer_00017541,Dearth,SSTR5_0,"product=Somatostatin receptor type 5;Dbxref=CDD:cd00637,GO:0004930|GO:0007186|GO:0016021,GO:0004983|GO:0007186|GO:0016021,GO:0016021,InterPro:IPR000276,InterPro:IPR000611,InterPro:IPR017452,PFAM:PF00001"
+Duplicate,Genetic Information Processing,Transcription,Acer_00017920,Dearth,NA,
+Duplicate,Genetic Information Processing,Transcription,Acer_00017919,Dearth,ACIN1,"product=Apoptotic chromatin condensation inducer in the nucleus;Dbxref=InterPro:IPR032552,PFAM:PF16294"
+Duplicate,Metabolism,Lipid metabolism,Acer_00033824,Excess,Eci1_0,"product=Enoyl-CoA delta isomerase 1, mitochondrial;Dbxref=CDD:cd06558,GO:0003824,InterPro:IPR001753,InterPro:IPR018376,InterPro:IPR029045,PFAM:PF00378"
+Duplicate,Metabolism,Lipid metabolism,Acer_00003065,Excess,Eci1_1,"product=Enoyl-CoA delta isomerase 1, mitochondrial;Dbxref=CDD:cd06558,GO:0003824,InterPro:IPR001753,InterPro:IPR018376,InterPro:IPR029045,PFAM:PF00378"
+Duplicate,Metabolism,Lipid metabolism,Acer_00024954,Excess,cpt2_1,"product=Carnitine O-palmitoyltransferase 2, mitochondrial;Dbxref=GO:0016746,InterPro:IPR000542,InterPro:IPR039551,InterPro:IPR042231,InterPro:IPR042572,PFAM:PF00755"
+Duplicate,Metabolism,Lipid metabolism,Acer_00033778,Excess,cpt2_0,"product=Carnitine O-palmitoyltransferase 2, mitochondrial;Dbxref=GO:0016746,InterPro:IPR000542,InterPro:IPR023213,InterPro:IPR039551,PFAM:PF00755"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00001352,Excess,PNPLA4_0,"product=Patatin-like phospholipase domain-containing protein 4;Dbxref=GO:0006629,GO:0016042|GO:0016787,InterPro:IPR002641,InterPro:IPR016035,InterPro:IPR033562,PFAM:PF01734"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00001356,Excess,PNPLA4_1,"product=Patatin-like phospholipase domain-containing protein 4;Dbxref=CDD:cd10507,GO:0003676|GO:0006351|GO:0008270,GO:0006379,GO:0006629,GO:0016042|GO:0016787,InterPro:IPR001222,InterPro:IPR002641,InterPro:IPR016035,InterPro:IPR019761,InterPro:IPR033562,InterPro:IPR034004,PFAM:PF01096,PFAM:PF01734"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00011601,Excess,MTHFS_0,"product=5-formyltetrahydrofolate cyclo-ligase;Dbxref=InterPro:IPR002698,InterPro:IPR024185,InterPro:IPR037171,PFAM:PF01812"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00015547,Excess,MTHFS_1,"product=5-formyltetrahydrofolate cyclo-ligase;Dbxref=InterPro:IPR002698,InterPro:IPR024185,InterPro:IPR037171,PFAM:PF01812"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00014000,Excess,xpa_0,"product=DNA repair protein complementing XP-A cells homolog;Dbxref=GO:0003684|GO:0006289,InterPro:IPR000465,InterPro:IPR009061,InterPro:IPR022652,InterPro:IPR022656,InterPro:IPR037129,PFAM:PF01286,PFAM:PF05181,TIGRFAM:TIGR00598"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00014009,Excess,xpa_1,"product=DNA repair protein complementing XP-A cells homolog;Dbxref=GO:0003684|GO:0006289,InterPro:IPR000465,InterPro:IPR009061,InterPro:IPR022652,InterPro:IPR022656,InterPro:IPR037129,PFAM:PF01286,PFAM:PF05181,TIGRFAM:TIGR00598"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00005725,Excess,DPYD_0,"product=Dihydropyrimidine dehydrogenase [NADP(+)];Dbxref=GO:0051536,InterPro:IPR009051"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00005721,Excess,dpyd-1,"product=Dihydropyrimidine dehydrogenase [NADP(+)];Dbxref=GO:0051536,InterPro:IPR009051"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00014011,Excess,PPCDC_1,"product=Phosphopantothenoylcysteine decarboxylase;Dbxref=GO:0003824,InterPro:IPR003382,InterPro:IPR036551,PFAM:PF02441"
+Duplicate,Metabolism,Metabolism of cofactors and vitamins,Acer_00014002,Excess,PPCDC_0,"product=Phosphopantothenoylcysteine decarboxylase;Dbxref=GO:0003824,InterPro:IPR003382,InterPro:IPR036551,PFAM:PF02441"
+Duplicate,Metabolism,Energy metabolism,Acer_00015999,Dearth,dgk_0,"product=Deoxyguanosine kinase;Dbxref=InterPro:IPR027417,InterPro:IPR031314,PFAM:PF01712"
+Duplicate,Metabolism,Energy metabolism,Acer_00016005,Dearth,dgk_1,"product=Deoxyguanosine kinase;Dbxref=CDD:cd01673,InterPro:IPR027417,InterPro:IPR031314,PFAM:PF01712"
+Duplicate,Metabolism,Energy metabolism,Acer_00029390,Dearth,blw,"product=ATP synthase subunit alpha, mitochondrial;Dbxref=CDD:cd18113,CDD:cd18116,GO:0005524,GO:0015986,GO:0015986|GO:0045261|GO:0046933,GO:0046034|GO:1902600,InterPro:IPR000194,InterPro:IPR000793,InterPro:IPR004100,InterPro:IPR005294,InterPro:IPR020003,InterPro:IPR023366,InterPro:IPR027417,InterPro:IPR036121,InterPro:IPR038376,PFAM:PF00006,PFAM:PF00306,PFAM:PF02874"
+Duplicate,Metabolism,Energy metabolism,Acer_00033618,Dearth,ATP5F1A,"product=ATP synthase subunit alpha, mitochondrial;Dbxref=CDD:cd18116,GO:0046034|GO:1902600,InterPro:IPR004100,InterPro:IPR023366,InterPro:IPR027417,InterPro:IPR036121,PFAM:PF02874"
+Duplicate,Metabolism,Energy metabolism,Acer_00015998,Dearth,Atp6v1f_0,"product=V-type proton ATPase subunit F;Dbxref=GO:0034220,GO:0034220|GO:0046961,InterPro:IPR008218,InterPro:IPR036906,PFAM:PF01990"
+Duplicate,Metabolism,Energy metabolism,Acer_00016004,Dearth,Atp6v1f_1,"product=V-type proton ATPase subunit F;Dbxref=GO:0034220,GO:0034220|GO:0046961,InterPro:IPR008218,InterPro:IPR036906,PFAM:PF01990"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00001911,Dearth,Taldo,"product=Probable transaldolase;Dbxref=GO:0004801|GO:0005737|GO:0006098,GO:0005975,InterPro:IPR001585,InterPro:IPR004730,InterPro:IPR013785,InterPro:IPR018225,PFAM:PF00923"
+Duplicate,Metabolism,Carbohydrate metabolism,Acer_00001910,Dearth,TALDO1,"product=Transaldolase;Dbxref=GO:0004801|GO:0005737|GO:0006098,GO:0005975,InterPro:IPR001585,InterPro:IPR004730,InterPro:IPR013785,InterPro:IPR018225,PFAM:PF00923"
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00023368,Excess,NA,Dbxref=InterPro:IPR036691
+Duplicate,Genetic Information Processing,Replication and repair,Acer_00019108,Excess,RTase_31,"product=Probable RNA-directed DNA polymerase from transposon BS;Dbxref=InterPro:IPR000477,InterPro:IPR043502,PFAM:PF00078"

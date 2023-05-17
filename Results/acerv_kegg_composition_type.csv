@@ -1,0 +1,59 @@
+class,major_category,df,chisq,chi_p,minor_category,n_gene_category,Overall,OR,fisher_p
+Unique,Cellular Processes,3,2.712,0.438,Transport and catabolism,2,608,4.07,0.318
+,,,,,Cell growth and death,0,315,1.181,>0.999
+,,,,,Cell motility,0,177,2.354,0.412
+,,,,,Cellular community - eukaryotes,0,334,1.095,>0.999
+,Environmental Information Processing,2,0.875,0.646,Signal transduction,2,1154,1.314,>0.999
+,,,,,Membrane transport,0,44,11.911,0.106
+,,,,,Signaling molecules and interaction,0,461,0.865,>0.999
+,Metabolism,10,20.949,0.021,Glycan biosynthesis and metabolism,1,311,1.837,0.342
+,,,,,Lipid metabolism,6,432,11.687,<0.001
+,,,,,Metabolism of cofactors and vitamins,1,321,1.772,0.357
+,,,,,Amino acid metabolism,0,356,0.7,>0.999
+,,,,,Biosynthesis of other secondary metabolites,0,101,2.725,0.331
+,,,,,Carbohydrate metabolism,0,311,0.817,>0.999
+,,,,,Energy metabolism,0,190,1.404,0.534
+,,,,,Metabolism of other amino acids,0,130,2.097,0.405
+,,,,,Metabolism of terpenoids and polyketides,0,68,4.079,0.238
+,,,,,Nucleotide metabolism,0,226,1.164,0.599
+,,,,,Xenobiotics biodegradation and metabolism,0,157,1.72,0.467
+,Organismal Systems,8,3.955,0.861,Digestive system,1,553,7.901,0.106
+,,,,,Circulatory system,0,157,8.173,0.164
+,,,,,Development and regeneration,0,230,5.435,0.233
+,,,,,Endocrine system,0,527,2.099,0.474
+,,,,,Environmental adaptation,0,149,8.634,0.156
+,,,,,Excretory system,0,110,11.83,0.117
+,,,,,Immune system,0,435,2.647,0.405
+,,,,,Nervous system,0,454,2.515,0.42
+,,,,,Sensory system,0,128,10.116,0.135
+Duplicate,Cellular Processes,3,1.766,0.622,Cell growth and death,16,315,1.31,0.354
+,,,,,Cell motility,8,177,1.178,0.696
+,,,,,Cellular community - eukaryotes,10,334,0.695,0.359
+,,,,,Transport and catabolism,27,608,1.086,0.795
+,Environmental Information Processing,2,2.732,0.255,Signal transduction,66,1154,1.223,0.482
+,,,,,Signaling molecules and interaction,23,461,0.93,0.811
+,,,,,Membrane transport,0,44,0.399,0.512
+,Genetic Information Processing,3,15.495,0.001,"Folding, sorting and degradation",28,528,1.032,0.905
+,,,,,Replication and repair,21,202,2.396,0.002
+,,,,,Transcription,4,248,0.333,0.012
+,,,,,Translation,26,528,0.925,0.812
+,Metabolism,10,49.162,<0.001,Amino acid metabolism,17,356,0.659,0.122
+,,,,,Biosynthesis of other secondary metabolites,7,101,1.079,0.846
+,,,,,Carbohydrate metabolism,10,311,0.452,0.009
+,,,,,Energy metabolism,6,190,0.484,0.057
+,,,,,Glycan biosynthesis and metabolism,24,311,1.114,0.644
+,,,,,Lipid metabolism,58,432,2.258,<0.001
+,,,,,Metabolism of cofactors and vitamins,36,321,1.714,0.007
+,,,,,Metabolism of other amino acids,11,130,1.273,0.396
+,,,,,Metabolism of terpenoids and polyketides,3,68,0.79,0.816
+,,,,,Nucleotide metabolism,5,226,0.342,0.006
+,,,,,Xenobiotics biodegradation and metabolism,11,157,1.044,0.875
+,Organismal Systems,8,18.286,0.019,Circulatory system,7,157,0.84,0.862
+,,,,,Development and regeneration,17,230,1.342,0.25
+,,,,,Digestive system,46,553,1.588,0.013
+,,,,,Endocrine system,23,527,0.72,0.152
+,,,,,Environmental adaptation,11,149,1.366,0.294
+,,,,,Excretory system,7,110,1.217,0.543
+,,,,,Immune system,18,435,0.694,0.151
+,,,,,Nervous system,19,454,0.699,0.157
+,,,,,Sensory system,14,128,2.041,0.024

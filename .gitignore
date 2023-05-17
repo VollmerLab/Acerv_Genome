@@ -1,0 +1,4 @@
+intermediate_files/*
+Code/old*
+Manuscript.lnk
+Results/kegg_pathway_completeness.rds
