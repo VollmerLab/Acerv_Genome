@@ -156,13 +156,18 @@ pathway_changes %>%
                position = position_dodge(0.5)) +
   geom_point(position = position_dodge(0.5)) +
   facet_wrap(~major_category, scales = 'free_y') +
+  guides(colour = guide_legend(title.position = 'top', title.hjust = 0.5)) +
   labs(x = 'Number of KEGG Pathways',
        y = NULL,
        colour = NULL) +
   theme_classic() +
   theme(panel.background = element_rect(colour = 'black'),
-        strip.background = element_blank())
-ggsave('../Results/significant_change_pathways.png', height = 7, width = 10)
+        strip.background = element_blank(),
+        axis.text = element_text(colour = 'black', size = 12),
+        axis.title = element_text(colour = 'black', size = 16),
+        legend.text = element_text(colour = 'black', size = 14),
+        legend.position = 'bottom')
+ggsave('../Results/significant_change_pathways.png', height = 7, width = 15, scale = 1)
 
 #### Read in Cafe Results - KEGG Paths ####
 cafe_trees <- read_lines('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/errorModel/Base_asr.tre') %>%
