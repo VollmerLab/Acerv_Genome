@@ -1,0 +1,8 @@
+7
+mrca(pdam,spis,meff_shinzato,mcac_shinzato,ayon_shinzato,aten_shinzato,aint_shinzato,agem_shinzato,aawi_shinzato,aflo_shinzato,acer,amic_shinzato,anas_shinzato,aacu_shinzato,adig_shinzato,aech_shinzato,amur_shinzato,ahya_shinzato,acyt_shinzato,asel_shinzato,amil_fuller)	b(-225.1,-164.7)
+mrca(meff_shinzato,mcac_shinzato,ayon_shinzato,aten_shinzato,aint_shinzato,agem_shinzato,aawi_shinzato,aflo_shinzato,acer,amic_shinzato,anas_shinzato,aacu_shinzato,adig_shinzato,aech_shinzato,amur_shinzato,ahya_shinzato,acyt_shinzato,asel_shinzato,amil_fuller)	b(-136.4,-70.6)
+mrca(meff_shinzato,mcac_shinzato)	b(-70.6,-5.3)
+mrca(ayon_shinzato,aten_shinzato,aint_shinzato,agem_shinzato,aawi_shinzato,aflo_shinzato,acer,amic_shinzato,anas_shinzato,aacu_shinzato,adig_shinzato,aech_shinzato,amur_shinzato,ahya_shinzato,acyt_shinzato,asel_shinzato,amil_fuller)	b(-70.6,-58.7)
+mrca(aint_shinzato,agem_shinzato,aawi_shinzato,aflo_shinzato)	b(-58.7,-20.4)
+mrca(amic_shinzato,anas_shinzato,aacu_shinzato)	b(-58.7,-23.0)
+mrca(aech_shinzato,amur_shinzato,ahya_shinzato,acyt_shinzato,asel_shinzato,amil_fuller)	b(-58.7,-16.7)
