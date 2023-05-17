@@ -10,3 +10,7 @@ Time calibrated tree using [Orthofinder](https://github.com/davidemms/OrthoFinde
 ## Comparative Cafe/KEGG
 [Cafe5](https://github.com/hahnlab/CAFE5) analysis of change in number of genes within Orthofinder derived [KEGG pathways](https://www.genome.jp/kegg/pathway.html). Filtered to only test pathways with a maximum spread of 100 gene difference across species (any greater and the cafe model doesn't fit).
 ![image info](Results/significant_change_pathways.png)
+
+Overall expansions/contractions
+
+<span style="color:green">some *expansions* text</span>.
