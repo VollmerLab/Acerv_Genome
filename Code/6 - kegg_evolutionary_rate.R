@@ -1,4 +1,8 @@
 ##TODO - why are numbers of families expand/contract so huge with gamma kegg...
+##TODO - What is the difference between posterior probability in 'Gamma_family_likelihoods.txt' and pvalue in Gamma_family_results.txt and which to use...
+##        - in family likelihoods for each path they sum to 1 across all rate groups...so it seesm like that posterior must be testing "fit" of lambda not expansion of catgegory...
+##TODO - change analysis such that first there are significant families/nodes. and there are also some families which significantly differ from the base evolutionary rate - breakdown of what those families are
+##TODO - REDO/INCORPORATE # of total gene copies along with the unique keggs
 
 #### Libraries ####
 library(tidyverse)
@@ -8,10 +12,14 @@ library(deeptime)
 library(brms)
 library(tidybayes)
 library(patchwork)
+library(gt)
 
 library(multidplyr)
 cluster <- new_cluster(parallel::detectCores() - 1) 
 cluster_library(cluster, c('ape', 'tidytree', 'tibble', 'dplyr', 'stringr'))
+
+paths_particular_interest <- c('map04620', 'map04624', 'map00260', 'map00270', 'map01100', 'map01110', 'map01230', 'map01120', 'map04361')
+
 
 #### KEGG Pathway data ####
 kegg_paths <- read_csv('../intermediate_files/kegg_orthogroup_pathways.csv.gz',
@@ -71,7 +79,69 @@ evolution_rate %>%
 k_categories <- 4
 global_lambda <- evolution_rate$lambda[evolution_rate$k_group == k_categories]
 
-#### Evolutionary Rates of each KEGG pathway & significance ####
+#### Families with Significant Gene Evolution ####
+
+pathway_changes <- read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', 
+                                    k_categories, '/Gamma_family_results.txt'),
+                              delim = '\t', show_col_types = FALSE) %>%
+  rename(FamilyID = `#FamilyID`) %>%
+  full_join(kegg_paths,
+            by = c('FamilyID' = 'kegg_path_id'))
+
+pathway_changes %>%
+  # filter(minor_category == 'Development and regeneration') %>%
+  group_by(major_category, minor_category) %>%
+  summarise(sig_paths = n_distinct(FamilyID[pvalue < 0.05 & !is.na(pvalue)]),
+            tested_paths = n_distinct(FamilyID[!is.na(pvalue)]),
+            total_paths = n_distinct(FamilyID),
+            untested_paths = n_distinct(FamilyID[is.na(pvalue)]),
+            .groups = 'drop') %>%
+  select(-untested_paths) %>%
+  mutate(value = sig_paths / tested_paths) %>%
+  # pivot_longer(cols = ends_with('paths')) %>%
+  # mutate(name = str_remove(name, '_paths'),
+  #        name = case_when(name == 'sig' ~ 'Significant',
+  #                         name == 'tested' ~ 'Tested',
+  #                         name == 'total' ~ 'Total'),
+  #        name = factor(name, levels = rev(c('Significant', 'Tested', 'Total')))) %>%
+  # filter(tested_paths < sig_paths)
+  
+  ggplot(aes(x = value, y = minor_category)) +
+  geom_linerange(aes(xmin = 0, xmax = value),
+                 position = position_dodge(0.5)) +
+  geom_point(position = position_dodge(0.5)) +
+  facet_wrap(~major_category, scales = 'free_y') +
+  scale_x_continuous(labels = scales::percent_format()) +
+  guides(colour = guide_legend(title.position = 'top', title.hjust = 0.5)) +
+  labs(x = 'KEGG Pathways (%)',
+       y = NULL,
+       colour = NULL) +
+  theme_classic() +
+  theme(panel.background = element_rect(colour = 'black'),
+        strip.background = element_blank(),
+        axis.text = element_text(colour = 'black', size = 12),
+        axis.title = element_text(colour = 'black', size = 16),
+        legend.text = element_text(colour = 'black', size = 14),
+        legend.position = 'bottom')
+ggsave('../Results/significant_change_pathways.png', height = 7, width = 15, scale = 1)
+
+pathway_changes %>%
+  filter(pvalue < 0.05) %>%
+  select(major_category, minor_category, name, FamilyID, pvalue) %>%
+  arrange(major_category, minor_category, name) %>%
+  gt(rowname_col = 'major_category') %>%
+  tab_header(title = 'KEGG Pathways with Significant Changes in number of unique KEGG Orthologs across Anthozoan Tree') %>%
+  tab_stubhead('Major KEGG Category') %>%
+  cols_label(minor_category = 'Minor KEGG Category',
+             name = 'KEGG Pathway',
+             pvalue = 'p-value') %>%
+  fmt(columns = 'pvalue', fns = scales::pvalue_format()) %>%
+  cols_merge(columns = c('name', 'FamilyID'), pattern = "{1} ({2})") %T>%
+  gtsave('../Results/significantly_evolving_pathways.pdf')  %T>%
+  gtsave('../Results/significantly_evolving_pathways.png')
+
+
+#### What Pathways are evolving at a signficantly different rate than others ####
 othrogroup_evolutionary_rates <- list.files('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut', 
                                             pattern = 'Gamma_family_likelihoods.txt|Base_family_likelihoods.txt', 
                                             recursive = TRUE,
@@ -87,206 +157,28 @@ othrogroup_evolutionary_rates <- list.files('../../Bioinformatics/Phylogenomics/
             .groups = 'drop') %>%
   select(data) %>%
   unnest(data) %>%
-  group_by(number_family_id) %>%
-  
-  #For each family choose maximum likelihood gamma mean value
-  filter(likelihood_of_category == max(likelihood_of_category)) %>%
-  ungroup %>%
+  filter(significant != 'N/S') %>%
   rename(FamilyID = number_family_id) %>%
   full_join(kegg_paths,
             by = c('FamilyID' = 'kegg_path_id')) %>%
-  mutate(pvalue = 1 - posterior_probability) %>%
-  nest(data = -c(gamma_cat_mean)) %>%
-  arrange(gamma_cat_mean) %>%
-  mutate(gamma_category = LETTERS[row_number()],
-         gamma_category = if_else(is.na(gamma_cat_mean), NA_character_, gamma_category)) %>%
-  unnest(data)
+  mutate(pvalue = 1 - posterior_probability)
 
 othrogroup_evolutionary_rates %>%
-  # filter(minor_category == 'Development and regeneration') %>%
-  group_by(major_category, minor_category) %>%
-  summarise(sig_paths = n_distinct(FamilyID[pvalue < 0.05 & !is.na(pvalue)]),
-            tested_paths = n_distinct(FamilyID[!is.na(pvalue)]),
-            total_paths = n_distinct(FamilyID),
-            untested_paths = n_distinct(FamilyID[is.na(pvalue)]),
-            .groups = 'drop') %>%
-  select(-untested_paths) %>%
-  pivot_longer(cols = ends_with('paths')) %>%
-  mutate(name = str_remove(name, '_paths'),
-         name = case_when(name == 'sig' ~ 'Significant',
-                          name == 'tested' ~ 'Tested',
-                          name == 'total' ~ 'Total'),
-         name = factor(name, levels = rev(c('Significant', 'Tested', 'Total')))) %>%
-  # filter(tested_paths < sig_paths)
+  filter(!is.na(gamma_cat_mean)) %>%
+  mutate(rate_group = if_else(gamma_cat_mean == min(gamma_cat_mean), 'Slower', 'Faster')) %>%
+  select(major_category, minor_category, name, FamilyID, rate_group) %>%
   
-  ggplot(aes(x = value, y = minor_category, colour = name)) +
-  geom_linerange(aes(xmin = 0, xmax = value),
-                 position = position_dodge(0.5)) +
-  geom_point(position = position_dodge(0.5)) +
-  facet_wrap(~major_category, scales = 'free_y') +
-  guides(colour = guide_legend(title.position = 'top', title.hjust = 0.5)) +
-  labs(x = 'Number of KEGG Pathways',
-       y = NULL,
-       colour = NULL) +
-  theme_classic() +
-  theme(panel.background = element_rect(colour = 'black'),
-        strip.background = element_blank(),
-        axis.text = element_text(colour = 'black', size = 12),
-        axis.title = element_text(colour = 'black', size = 16),
-        legend.text = element_text(colour = 'black', size = 14),
-        legend.position = 'bottom')
-ggsave('../Results/significant_change_pathways.png', height = 7, width = 15, scale = 1)
+  arrange(major_category, minor_category, name) %>%
+  gt(rowname_col = 'major_category', groupname_col = 'rate_group') %>%
+  tab_header(title = 'KEGG Pathways Significantly Faster or Slower Evolutionary Rates than background in Anthozoans') %>%
+  tab_stubhead('Major KEGG Category') %>%
+  cols_label(minor_category = 'Minor KEGG Category',
+             name = 'KEGG Pathway') %>%
+  cols_merge(columns = c('name', 'FamilyID'), pattern = "{1} ({2})") %T>%
+  gtsave('../Results/differential_evolutionary_rate.pdf')  %T>%
+  gtsave('../Results/differential_evolutionary_rate.png')
 
-#### Composition of Evolutionary Rate Groups ####
-# data <- tmp; catagories <- unique(kegg_paths$major_category); group_var <- 'major_category'; n_var <- 'n_keggs'
-format_brms_data <- function(data, catagories, group_var = 'major_category', n_var = 'n_keggs'){
-  pivot_wider(data, 
-              names_from = all_of(group_var), 
-              values_from = all_of(n_var),
-              values_fill = 0L) %>%
-    mutate(Y = cbind(!!!syms(catagories)),
-           total = rowSums(Y)) %>%
-    select(-all_of(catagories))
-}
-
-brms_count_model_fitting <- function(data){
-  brm(total ~ gamma_category + (1 | species),
-      family = poisson(),
-      prior = prior(normal(0, 10), 
-                    class = 'b'), 
-      data = data,
-      sample_prior = 'yes',
-      chains = 4,
-      cores = 4,
-      iter = 2000,
-      warmup = 1000,
-      backend = 'cmdstanr')
-}
-
-brms_composition_model_fitting <- function(data){
-  brm(Y | trials(total) ~ gamma_category + (1 | species),
-      family = multinomial(),
-      prior = prior(normal(0, 10), 
-                    class = 'b'), 
-      data = data,
-      sample_prior = 'yes',
-      chains = 4,
-      cores = 4,
-      iter = 2000,
-      warmup = 1000,
-      backend = 'cmdstanr')
-}
-
-count_plot <- function(data, model){
-  data %>%
-    select(gamma_category) %>%
-    distinct %>%
-    mutate(total = 1) %>%
-    add_epred_draws(model, re_formula = NA) %>%
-    point_interval() %>%
-    ungroup %>%
-    
-    ggplot(aes(x = gamma_category, y = .epred, ymin = .lower, ymax = .upper)) +
-    geom_pointrange() +
-    # facet_wrap(~ .category) +
-    scale_y_continuous(labels = scales::comma_format()) +
-    labs(y = 'Orthogroups (#)',
-         x = 'Evolutionary Rate (λ)') +
-    theme_classic() +
-    theme(axis.title = element_text(colour = 'black', size = 16),
-          axis.text = element_text(colour = 'black', size = 12),
-          legend.title = element_text(colour = 'black', size = 16),
-          legend.text = element_text(colour = 'black', size = 12),
-          panel.background = element_rect(colour = 'black'))
-}
-
-composition_plot <- function(data, model){
-  data %>%
-    select(gamma_category) %>%
-    distinct %>%
-    mutate(total = 1) %>%
-    add_epred_draws(model, re_formula = NA) %>%
-    point_interval() %>%
-    ungroup %>%
-    
-    ggplot(aes(x = gamma_category, y = .epred, ymin = .lower, ymax = .upper, 
-               colour = .category)) +
-    geom_pointrange(position = position_dodge(0.5)) +
-    scale_y_continuous(labels = scales::percent_format()) +
-    labs(y = 'Orthogroups (%)',
-         x = 'Evolutionary Rate (λ)') +
-    theme_classic() +
-    theme(axis.title = element_text(colour = 'black', size = 16),
-          axis.text = element_text(colour = 'black', size = 12),
-          legend.title = element_text(colour = 'black', size = 16),
-          legend.text = element_text(colour = 'black', size = 12),
-          panel.background = element_rect(colour = 'black'),
-          legend.position = 'bottom')
-}
-
-major_cat_data <- select(othrogroup_evolutionary_rates, FamilyID, gamma_cat_mean, gamma_category, name, 
-       minor_category, major_category) %>%
-  filter(!is.na(gamma_category)) %>%
-  mutate(gamma_category = factor(gamma_category, ordered = TRUE)) %>%
-  left_join(species_pathway_keggs,
-            by = 'FamilyID') %>%
   
-  group_by(major_category, species, gamma_category) %>%
-  summarise(n_paths = n_distinct(FamilyID),
-            n_keggs = sum(n_kegg),
-            .groups = 'drop') %>%
-  select(-n_paths) %>%
-  format_brms_data(unique(kegg_paths$major_category))
-
-major_count_model <- brms_count_model_fitting(major_cat_data)
-major_comp_model <- brms_composition_model_fitting(major_cat_data)
-
-
-count_plot(major_cat_data, major_count_model) / 
-  (composition_plot(major_cat_data, major_comp_model) + 
-     labs(colour = NULL) + guides(colour = guide_legend(ncol = 2))) &
-  plot_annotation(title = 'Major KEGG Categories')
-ggsave('../Results/evolutionary_rate_major_keggs.png', height = 12, width = 7)
-
-minor_category_models <- select(othrogroup_evolutionary_rates, FamilyID, gamma_cat_mean, gamma_category, name, 
-       minor_category, major_category) %>%
-  filter(!is.na(gamma_category)) %>%
-  mutate(gamma_category = factor(gamma_category, ordered = TRUE)) %>%
-  left_join(species_pathway_keggs,
-            by = 'FamilyID') %>%
-  
-  group_by(major_category, minor_category, species, gamma_category) %>%
-  summarise(n_paths = n_distinct(FamilyID),
-            n_keggs = sum(n_kegg),
-            .groups = 'drop') %>%
-  select(-n_paths) %>%
-  nest(data = -c(major_category)) %>%
-  left_join(kegg_paths %>%
-              group_by(major_category) %>%
-              summarise(internal_categories = list(unique(minor_category))),
-            by = 'major_category') %>%
-  rowwise %>%
-  mutate(data = list(format_brms_data(data, internal_categories, group_var = 'minor_category', n_var = 'n_keggs'))) %>%
-  mutate(count_model = list(brms_count_model_fitting(data)),
-         composition_model = list(brms_composition_model_fitting(data)))
-
-minor_cat_plots <- minor_category_models %>%
-  mutate(count_plot = list(count_plot(data, count_model)),
-         composition_plot = list(composition_plot(data, composition_model) + 
-                                   labs(colour = 'Minor KEGG Category'))) %>%
-  rowwise() %>%
-  mutate(combined_plot = list(wrap_plots(count_plot + labs(title = str_replace_all(major_category, ' ', '\n')), 
-                                         composition_plot + 
-                                           labs(colour = NULL) + 
-                                           guides(colour = guide_legend(ncol = 1)), 
-                                         ncol = 1))) %>%
-  ungroup %>%
-  summarise(plot = list(wrap_plots(combined_plot, ncol = nrow(.)))) %>%
-  pull(plot) %>%
-  pluck(1)
-
-ggsave('../Results/evolutionary_rate_minor_keggs.png', plot = minor_cat_plots, width = 18, height = 12)
-
 #### Redo Cafe evolutionary Rates ####
 cafe_trees <- read_lines(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', k_categories, '/Gamma_asr.tre')) %>%
   str_subset('^ *TREE') %>%
@@ -299,8 +191,9 @@ cafe_trees <- read_lines(str_c('../../Bioinformatics/Phylogenomics/Time Calibrat
   summarise(read.tree(text = tree) %>%
               as_tibble() %>%
               mutate(cafe_nodeID = str_extract(label, '(([a-z_])+)?\\<[0-9]+\\>'),
-                     label = str_replace(label, '\\<[0-9]+\\>', str_c('<', node, '>'))) %>%
-              select(label, cafe_nodeID)) %>%
+                     label = str_replace(label, '\\<[0-9]+\\>', str_c('<', node, '>')),
+                     n_keggs = str_extract(label, '[0-9]+$') %>% as.integer) %>%
+              select(label, cafe_nodeID, n_keggs)) %>%
   collect %>%
   ungroup %>%
   mutate(is_significant = str_detect(label, '\\*'),
@@ -308,7 +201,8 @@ cafe_trees <- read_lines(str_c('../../Bioinformatics/Phylogenomics/Time Calibrat
          n_gene = str_extract(label, '[0-9]+$') %>% as.integer()) 
 
 
-gene_family_change <- read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafeOut/K', k_categories, '/Gamma_clade_results.txt'),
+gene_family_change <- read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K',
+                                       k_categories, '/Gamma_clade_results.txt'),
                                  delim = '\t', show_col_types = FALSE) %>%
   rename(cafe_nodeID = `#Taxon_ID`) %>%
   left_join(cafe_trees %>%
@@ -316,15 +210,14 @@ gene_family_change <- read_delim(str_c('../../Bioinformatics/Phylogenomics/Time 
               distinct,
             by = 'cafe_nodeID')
 
-
 complete_family_species_cafe <- full_join(
-  read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafeOut/K', k_categories, '/Gamma_change.tab'), 
+  read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', k_categories, '/Gamma_change.tab'), 
              delim = '\t', show_col_types = FALSE) %>%
     pivot_longer(cols = -FamilyID,
                  names_to = 'cafe_nodeID',
                  values_to = 'gene_change'),
   
-  read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafeOut/K', k_categories, '/Gamma_branch_probabilities.tab'), 
+  read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', k_categories, '/Gamma_branch_probabilities.tab'), 
              na = 'N/A', delim = '\t', show_col_types = FALSE) %>%
     select(-...49) %>%
     rename(FamilyID = `#FamilyID`) %>%
@@ -342,7 +235,7 @@ complete_family_species_cafe <- full_join(
   # pivot_wider(names_from = 'pos_neg',
   #             values_from = 'gene_change', values_fill = 0L) %>%
   
-  left_join(read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafeOut/K', k_categories, '/Gamma_family_results.txt'),
+  left_join(read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', k_categories, '/Gamma_family_results.txt'),
                        delim = '\t', show_col_types = FALSE),
             by = c('FamilyID' = '#FamilyID')) %>%
   select(-`Significant at 0.05`) %>%
@@ -353,12 +246,19 @@ complete_family_species_cafe <- full_join(
             by = 'cafe_nodeID')
 
 #### Make Tree with Evolutionary Categories ####
+bipartition_colours <- function(x) c("red", "yellow", "green", "purple", "blue", 'black')
+
 cafe_tree_plot <- the_tree %>%
   left_join(select(gene_family_change, -cafe_nodeID),
-            by = c('node' = 'ortho_nodeID')) %>%
+            by = c('node' = 'ortho_nodeID')) %>% 
   ggtree(layout = 'rectangular') +
   
-  geom_tiplab(aes(label = species), hjust = 0,
+  geom_tiplab(aes(label = scales::comma(Increase)), hjust = 0,
+              colour = 'darkgreen') +
+  geom_tiplab(aes(label = scales::comma(Decrease)), hjust = -1,
+              colour = 'darkred') +
+  
+  geom_tiplab(aes(label = species), hjust = -0.5,
               fontface = "italic") +
   geom_range('CI_date', colour = 'red', size = 3, alpha = 0.3) +
   # geom_nodelab(aes(label = boot_support), vjust = -1, hjust = 1.3) +
@@ -399,9 +299,19 @@ cafe_tree_plot <- revts(cafe_tree_plot)
 cafe_tree_plot
 ggsave('../Results/cafe_time_tree.png', plot = cafe_tree_plot, height = 7, width = 10)
 
+#### Characterize Node Changes ####
+gene_family_change
+
+complete_family_species_cafe %>%
+  filter(str_detect(cafe_nodeID, '<44>')) %>%
+  left_join(kegg_paths, by = c('FamilyID' = 'kegg_path_id')) %>%
+  filter(str_detect(minor_category, 'Immune'))
+  # filter(!is.na(node_p)) %>%
+  arrange(node_p)
+  filter(node_p < 0.05)
+
 
 #### Write output to use in future ####
-
 as_tibble(the_tree) %>%
   select(parent, node, label, orthofinder_code, species) %>%
   rename(ortho_parentID = parent,
@@ -410,3 +320,64 @@ as_tibble(the_tree) %>%
             by = 'ortho_nodeID') %>%
   write_csv('../intermediate_files/geneChange_tree_out.csv')
 
+
+#### Trees for Individual Pathways ####
+# tree <- individual_pathway_trees$tree[[1]]
+make_tree_plot <- function(tree){
+  tree %>%
+    mutate(species = str_c(species, ' (', n_gene, ')')) %>%
+    ggtree(layout = 'rectangular') +
+    
+    geom_tiplab(aes(label = species), hjust = 0,
+                fontface = "italic") +
+    geom_tippoint(aes(colour = is_significant)) +
+    geom_nodelab(aes(label = scales::comma(n_gene)),
+                 hjust = 1.5, vjust = -0.5) +
+    geom_nodepoint(aes(colour = is_significant)) +
+    scale_x_continuous(limits = c(-10, 425)) +
+    scale_colour_manual(values = c('TRUE' = 'red', 'FALSE' = 'black')) +
+    guides(colour = 'none') +
+    theme_tree2()
+}
+
+individual_pathway_trees <- cafe_trees %>%
+  nest(data = -c(FamilyID)) %>%
+  left_join(pathway_changes,
+            by = 'FamilyID') %>%
+  rowwise %>%
+  mutate(tree = list(left_join(the_tree, 
+                               data,
+                               by = c('node' = 'ortho_nodeID')))) %>%
+  ungroup %>%
+  filter(FamilyID %in% paths_particular_interest | pvalue < 0.05) %>%
+  rowwise %>%
+  mutate(tree_plot = list(make_tree_plot(tree) + 
+                            labs(title = name, subtitle = scales::pvalue(pvalue, add_p = TRUE)))) %>%
+  ungroup
+
+
+individual_pathway_trees$tree_plot[[3]]
+
+
+individual_pathway_trees %>%
+  filter(str_detect(minor_category, 'Immune')) %>%
+  pull(tree_plot) %>%
+  wrap_plots()
+
+individual_pathway_trees %>%
+  count(minor_category)
+
+individual_pathway_trees %>%
+  # filter(FamilyID == 'map04361')
+  filter(str_detect(minor_category, 'Develop')) %>%
+  pull(tree_plot) %>%
+  wrap_plots()
+
+
+individual_pathway_trees %>%
+  group_by(major_category, minor_category) %>%
+  summarise(plot = list(wrap_plots(tree_plot)),
+            n = n()) %>%
+  filter(minor_category == 'Amino acid metabolism') %>%
+  pull(plot) %>%
+  pluck(1)
