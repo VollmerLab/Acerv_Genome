@@ -17,17 +17,7 @@ Given 4 distinct groups of gene evolving at different rates the number of catego
 Number of KEGG pathways which expanded/contracted at each node in tree
 ![image info](Results/cafe_time_tree.png)
 
-<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-<foreignObject width="100" height="100">
-    <div xmlns="http://www.w3.org/1999/xhtml">
-        <ul>
-            <li>text</li>
-        </ul>
-        <!-- Other embed HTML element/text into SVG -->
-    </div>
-</foreignObject>
-</svg>
-![](Results/significantly_evolving_pathways.html)
+![image info](Results/significantly_evolving_pathways.png)
 
 ## KEGG Evolutionary Rates
 
