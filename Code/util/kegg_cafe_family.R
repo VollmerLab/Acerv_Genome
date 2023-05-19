@@ -27,12 +27,25 @@ for_cafe <- read_delim('../../../Bioinformatics/Phylogenomics/Phylogenetic_Hiera
   ungroup %>%
   left_join(kegg_paths, 
             by = 'Orthogroup') %>%
-  select(-kegg_gene:-prop_top_hits) %>%
+  
+  
   unnest(kegg_paths) %>%
-  select(kegg_path_id, species, n) %>%
+  select(-kegg_gene, -name:-rel_pathway) %>%
+  group_by(kegg_path_id, kegg_orthology, species) %>%
+  summarise(n_ortho = n_distinct(Orthogroup),
+            n_gene = sum(n),
+            .groups = 'drop') %>%
   group_by(kegg_path_id, species) %>%
-  summarise(n = sum(n),
+  summarise(n = n_distinct(kegg_orthology),
             .groups = 'drop_last') %>%
+
+# %>%
+#   select(-kegg_gene:-prop_top_hits) %>%
+#   unnest(kegg_paths) %>%
+#   select(kegg_path_id, species, n) %>%
+#   group_by(kegg_path_id, species) %>%
+#   summarise(n = sum(n),
+#             .groups = 'drop_last') %>%
   mutate(max_diff = max(n) - min(n),
          n_species = n_distinct(species)) %>%
   pivot_wider(names_from = species,
@@ -60,3 +73,29 @@ write_delim(for_cafe, delim = '\t', file = '../../intermediate_files/kegg_famili
 # 
 # kegg_paths %>%
 #   filter(kegg_path_id %in% c('map04080', 'map04020'))
+
+
+for_cafe %>%
+  unnest(kegg_paths) %>%
+  select(-kegg_gene, -name:-rel_pathway) %>%
+  group_by(kegg_path_id, kegg_orthology, species) %>%
+  summarise(n_ortho = n_distinct(Orthogroup),
+            n_gene = sum(n),
+            .groups = 'drop') %>%
+  group_by(kegg_path_id, species) %>%
+  summarise(n = n_distinct(kegg_orthology),
+            .groups = 'drop_last') %>%
+  mutate(max_diff = max(n) - min(n),
+         n_species = n_distinct(species)) %>%
+  pivot_wider(names_from = species,
+              values_from = n,
+              values_fill = 0L) %>%
+  mutate(Desc = '(null)', .before = everything()) %>%
+  mutate(kegg_path_id = str_remove(kegg_path_id, 'path:')) %>%
+  rename('Family ID' = kegg_path_id) %>%
+  ungroup %>%
+  # arrange(-max_diff)
+  
+  filter(n_species > 1,
+         max_diff <= maxDiff) %>%
+  select(-max_diff, -n_species)

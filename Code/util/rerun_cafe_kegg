@@ -16,7 +16,6 @@ cafe5 \
   --output_prefix ${outdir}/cafeOut/errorModel \
   --infile ${outdir}/kegg_families.txt \
   --tree ${species_tree} \
-  --poisson \
   -e
 
 cafe5 \
@@ -24,5 +23,17 @@ cafe5 \
   --output_prefix ${outdir}/cafeOut/errorModel \
   --infile ${outdir}/kegg_families.txt \
   --tree ${species_tree} \
-  --poisson \
   -e${outdir}/cafeOut/errorModel/Base_error_model.txt
+
+
+#
+
+for k in {1..10}; do
+  # 1 - run gamma models with different numbers of bins - no error estimates though
+  cafe5 \
+    --cores ${SLURM_CPUS_PER_TASK} \
+    -k ${k} \
+    --output_prefix ${outdir}/cafeOut/K${k} \
+    --infile ${outdir}/kegg_families.txt \
+    --tree ${species_tree}
+done

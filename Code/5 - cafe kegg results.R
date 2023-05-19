@@ -3,7 +3,6 @@
 ##TODO - add clade markings for within acropora(?)
 ##TODO - Make axis title (x MYA) 
 ##TODO - add cafe +/- to tip labels
-##TODO - what to do about groups with too big a spread... especially since both Tolls are lost > 100 but cafe wont fit (at least initial model) with cutoff of 200 - works with uniform lambda??
 
 #Cafe results. If "family p" is non-significant then no test for significance of individual nodes
 
@@ -19,12 +18,16 @@ cluster <- new_cluster(parallel::detectCores() - 1)
 cluster_library(cluster, c('ape', 'tidytree', 'tibble', 'dplyr', 'stringr'))
 
 #### KEGG Pathway data ####
+paths_particular_interest <- c('map04620', 'map04624', 'map00260', 'map00270', 'map01100', 'map01110', 'map01230', 'map01120')
+
 kegg_paths <- read_csv('../intermediate_files/kegg_orthogroup_pathways.csv.gz',
                        show_col_types = FALSE) %>%
   filter(major_category != 'Human Diseases') %>%
   select(kegg_path_id, name, description, minor_category, major_category, pathway_map, rel_pathway) %>%
   distinct %>%
   mutate(kegg_path_id = str_remove(kegg_path_id, 'path:'))
+
+filter(kegg_paths, kegg_path_id %in% paths_particular_interest)
 
 #range for isthmus of panama - Bacon et al 2015 and O'Dea et al 2016
 panama_range <- -c(20, 3)
@@ -169,6 +172,8 @@ pathway_changes %>%
         legend.position = 'bottom')
 ggsave('../Results/significant_change_pathways.png', height = 7, width = 15, scale = 1)
 
+filter(pathway_changes, FamilyID %in% paths_particular_interest)
+
 #### Read in Cafe Results - KEGG Paths ####
 cafe_trees <- read_lines('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/errorModel/Base_asr.tre') %>%
   str_subset('^ *TREE') %>%
@@ -181,8 +186,9 @@ cafe_trees <- read_lines('../../Bioinformatics/Phylogenomics/Time Calibration/ca
   summarise(read.tree(text = tree) %>%
               as_tibble() %>%
               mutate(cafe_nodeID = str_extract(label, '(([a-z_])+)?\\<[0-9]+\\>'),
-                     label = str_replace(label, '\\<[0-9]+\\>', str_c('<', node, '>'))) %>%
-              select(label, cafe_nodeID)) %>%
+                     label = str_replace(label, '\\<[0-9]+\\>', str_c('<', node, '>')),
+                     n_keggs = str_extract(label, '[0-9]+$') %>% as.integer) %>%
+              select(label, cafe_nodeID, n_keggs)) %>%
   collect %>%
   ungroup %>%
   mutate(is_significant = str_detect(label, '\\*'),
@@ -281,12 +287,38 @@ cafe_tree_plot <- revts(cafe_tree_plot)
 cafe_tree_plot
 ggsave('../Results/cafe_time_tree.png', plot = cafe_tree_plot, height = 7, width = 10)
 
+#### Trees for Individual Pathways ####
+# tree <- individual_pathway_trees$tree[[1]]
+make_tree_plot <- function(tree){
+  tree %>%
+    mutate(species = str_c(species, ' (', n_gene, ')')) %>%
+    ggtree(layout = 'rectangular') +
+    
+    geom_tiplab(aes(label = species), hjust = 0,
+                fontface = "italic") +
+    geom_tippoint(aes(colour = is_significant)) +
+    geom_nodelab(aes(label = scales::comma(n_gene)),
+                 hjust = 1.5, vjust = -0.5) +
+    geom_nodepoint(aes(colour = is_significant)) +
+    scale_x_continuous(limits = c(-10, 425)) +
+    scale_colour_manual(values = c('TRUE' = 'red', 'FALSE' = 'black')) +
+    guides(colour = 'none') +
+    theme_tree2()
+}
 
-complete_family_species_cafe %>%
-  
-  filter(FamilyID == 'map00020')
-  mutate(direction = if_else(gene_change < 0, 'contraction', 'expansion'),
-         gene_change = if_else(node_p < 0.05, gene_change, 0)) %>%
-  filter(is.na(gene_change))
-  group_by(cafe_nodeID, ortho_nodeID, direction) %>%
-  summarise(gene_change = sum(gene_change))
+individual_pathway_trees <- cafe_trees %>%
+  nest(data = -c(FamilyID)) %>%
+  left_join(pathway_changes,
+            by = 'FamilyID') %>%
+  rowwise %>%
+  mutate(tree = list(left_join(the_tree, 
+                               data,
+                               by = c('node' = 'ortho_nodeID')))) %>%
+  ungroup %>%
+  filter(FamilyID %in% paths_particular_interest) %>%
+  rowwise %>%
+  mutate(tree_plot = list(make_tree_plot(tree) + labs(title = name, subtitle = scales::pvalue(pvalue)))) %>%
+  ungroup
+
+
+
