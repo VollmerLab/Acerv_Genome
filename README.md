@@ -20,9 +20,5 @@ Number of KEGG pathways which expanded/contracted at each node in tree
 [![image info](Results/significantly_evolving_pathways.png)](Results/significantly_evolving_pathways.pdf)
 
 ## KEGG Evolutionary Rates
-
-Mean evolutionary rate of major KEGG categories including total number of KEGG Orthologs found in each category (top) and composition of KEGG orthologs (bottom). Normalized across species
-![image info](Results/evolutionary_rate_major_keggs.png)
-
-Mean evolutionary rate of minor KEGG categories within each major category including total number of KEGG Orthologs found in each category (top) and composition of KEGG orthologs (bottom). Normalized across species
-![image info](Results/evolutionary_rate_minor_keggs.png)
+KEGG Pathways evolving at a rate faster/slower than the background rate of evolution in the Anthozoans
+[![image info](Results/differential_evolutionary_rate.png)](Results/differential_evolutionary_rate.pdf)

@@ -6,7 +6,7 @@ module load anaconda3; source activate cafe
 
 outdir=/scratch/j.selwyn/phylogenetics/cafe_kegg
 species_tree=/scratch/j.selwyn/phylogenetics/time_calibration_cafe/tree.orthofinder.result.date.nexus.ultrametric
-gene_families=/scratch/j.selwyn/phylogenetics/cafe_kegg/kegg_families.txt
+gene_families=/scratch/j.selwyn/phylogenetics/cafe_kegg/kegg_families_gene_level.txt
 
 mkdir -p ${outdir}/cafeOut
 cd ${outdir}
@@ -14,14 +14,14 @@ cd ${outdir}
 cafe5 \
   --cores ${SLURM_CPUS_PER_TASK} \
   --output_prefix ${outdir}/cafeOut/errorModel \
-  --infile ${outdir}/kegg_families.txt \
+  --infile ${gene_families} \
   --tree ${species_tree} \
   -e
 
 cafe5 \
   --cores ${SLURM_CPUS_PER_TASK} \
   --output_prefix ${outdir}/cafeOut/errorModel \
-  --infile ${outdir}/kegg_families.txt \
+  --infile ${gene_families} \
   --tree ${species_tree} \
   -e${outdir}/cafeOut/errorModel/Base_error_model.txt
 
@@ -34,6 +34,6 @@ for k in {1..10}; do
     --cores ${SLURM_CPUS_PER_TASK} \
     -k ${k} \
     --output_prefix ${outdir}/cafeOut/K${k} \
-    --infile ${outdir}/kegg_families.txt \
+    --infile ${gene_families} \
     --tree ${species_tree}
 done
