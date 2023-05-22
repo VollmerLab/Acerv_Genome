@@ -8,7 +8,7 @@ Time calibrated tree using [Orthofinder](https://github.com/davidemms/OrthoFinde
 ![image info](Results/time_tree.png)
 
 ## Expansions/Contractions of the number of unique KEGG orthologs found within each KEGG pathway in each Species
-[Cafe5](https://github.com/hahnlab/CAFE5) analysis of change in number of unique [KEGG Orthologs](https://www.genome.jp/kegg/ko.html) within [KEGG pathways](https://www.genome.jp/kegg/pathway.html).
+[Cafe5](https://github.com/hahnlab/CAFE5) analysis of change in number of unique [KEGG Orthologs](https://www.genome.jp/kegg/ko.html) within [KEGG pathways](https://www.genome.jp/kegg/pathway.html). A total of 324 KEGG pathways were analyzed.
 
 Relative percentage pathways within each KEGG minor category with significantly changing number of orthogroups across the tree:
 ![image info](Results/significant_change_pathways.png)
@@ -21,6 +21,7 @@ Number of KEGG pathways which expanded/contracted at each node in tree
 [KEGG Pathways showing significant changes in the number of KEGG Orthologs at important splits in the Anthozoan Tree](Results/pathway_changes_nodes.html)
 
 ## Expansions/Contractions of the number of gene copies of each KEGG orthologs found within each Species
+A total of 2,595 KEGG Orthologs were analyzed.
 Relative percentage KEGG Orthologs within each KEGG minor category with significantly changing number of gene copies across the tree:
 ![image info](Results/significant_change_ko.png)
 
