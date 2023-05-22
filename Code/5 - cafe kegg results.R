@@ -12,6 +12,7 @@ library(tidyverse)
 library(magrittr)
 library(treedataverse)
 library(deeptime)
+library(gt)
 
 library(multidplyr)
 cluster <- new_cluster(parallel::detectCores() - 1) 
@@ -62,6 +63,7 @@ write_rds(the_tree, '../intermediate_files/updated_tree.rds')
 simple_tree_plot <- the_tree %>%
   ggtree() +
   geom_nodelab(aes(label = node)) +
+  # geom_tiplab(aes(label = node))
   geom_tiplab()
 
 viewClade(simple_tree_plot, MRCA(simple_tree_plot, "ayon", "amil"))
@@ -146,21 +148,23 @@ pathway_changes %>%
             untested_paths = n_distinct(FamilyID[is.na(pvalue)]),
             .groups = 'drop') %>%
   select(-untested_paths) %>%
-  pivot_longer(cols = ends_with('paths')) %>%
-  mutate(name = str_remove(name, '_paths'),
-         name = case_when(name == 'sig' ~ 'Significant',
-                          name == 'tested' ~ 'Tested',
-                          name == 'total' ~ 'Total'),
-         name = factor(name, levels = rev(c('Significant', 'Tested', 'Total')))) %>%
+  mutate(value = sig_paths / tested_paths) %>%
+  # pivot_longer(cols = ends_with('paths')) %>%
+  # mutate(name = str_remove(name, '_paths'),
+  #        name = case_when(name == 'sig' ~ 'Significant',
+  #                         name == 'tested' ~ 'Tested',
+  #                         name == 'total' ~ 'Total'),
+  #        name = factor(name, levels = rev(c('Significant', 'Tested', 'Total')))) %>%
   # filter(tested_paths < sig_paths)
   
-  ggplot(aes(x = value, y = minor_category, colour = name)) +
+  ggplot(aes(x = value, y = minor_category)) +
   geom_linerange(aes(xmin = 0, xmax = value),
-               position = position_dodge(0.5)) +
+                 position = position_dodge(0.5)) +
   geom_point(position = position_dodge(0.5)) +
   facet_wrap(~major_category, scales = 'free_y') +
+  scale_x_continuous(labels = scales::percent_format()) +
   guides(colour = guide_legend(title.position = 'top', title.hjust = 0.5)) +
-  labs(x = 'Number of KEGG Pathways',
+  labs(x = 'KEGG Pathways (%)',
        y = NULL,
        colour = NULL) +
   theme_classic() +
@@ -173,6 +177,20 @@ pathway_changes %>%
 ggsave('../Results/significant_change_pathways.png', height = 7, width = 15, scale = 1)
 
 filter(pathway_changes, FamilyID %in% paths_particular_interest)
+
+pathway_changes %>%
+  filter(pvalue < 0.05) %>%
+  select(major_category, minor_category, name, FamilyID, pvalue) %>%
+  arrange(major_category, minor_category, name) %>%
+  gt(rowname_col = 'major_category') %>%
+  tab_header(title = 'KEGG Pathways with Significant Changes in number of unique KEGG Orthologs across Anthozoan Tree') %>%
+  tab_stubhead('Major KEGG Category') %>%
+  cols_label(minor_category = 'Minor KEGG Category',
+             name = 'KEGG Pathway',
+             pvalue = 'p-value') %>%
+  fmt(columns = 'pvalue', fns = scales::pvalue_format()) %>%
+  cols_merge(columns = c('name', 'FamilyID'), pattern = "{1} ({2})") %T>%
+  gtsave('../Results/significantly_evolving_pathways.html')
 
 #### Read in Cafe Results - KEGG Paths ####
 cafe_trees <- read_lines('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/errorModel/Base_asr.tre') %>%
@@ -246,7 +264,7 @@ cafe_tree_plot <- the_tree %>%
             by = c('node' = 'ortho_nodeID')) %>%
   ggtree(layout = 'rectangular') +
   
-  geom_tiplab(aes(label = species), hjust = 0,
+  geom_tiplab(aes(label = str_c(species, ' (', Increase, '/', Decrease, ')')), hjust = 0,
               fontface = "italic") +
   geom_range('CI_date', colour = 'red', size = 3, alpha = 0.3) +
   # geom_nodelab(aes(label = boot_support), vjust = -1, hjust = 1.3) +
@@ -315,10 +333,73 @@ individual_pathway_trees <- cafe_trees %>%
                                data,
                                by = c('node' = 'ortho_nodeID')))) %>%
   ungroup %>%
-  filter(FamilyID %in% paths_particular_interest) %>%
+  # filter(FamilyID %in% paths_particular_interest) %>%
   rowwise %>%
   mutate(tree_plot = list(make_tree_plot(tree) + labs(title = name, subtitle = scales::pvalue(pvalue)))) %>%
   ungroup
 
+individual_pathway_trees %>%
+  filter(FamilyID == 'map00430') %>%
+  pull(tree_plot) %>%
+  pluck(1)
+
+#### What pathways expanded/contracted at nodes of interest ####
+simple_tree_plot
+nodes_of_interest <- tibble(node = c(28, 30, 32, 14),
+                           node_description = c('anemone_coral', 'robust_complex', 
+                                           'acroporid_split',
+                                           'acropora cervicornis')) %>%
+  mutate(node_description = fct_inorder(node_description))
+
+node_changes <- cafe_trees %>%
+  filter(is_significant) %>%
+  left_join(select(the_tree, node, orthofinder_code, species),
+            by = c('ortho_nodeID' = 'node')) %>%
+  rename(node = ortho_nodeID) %>%
+  inner_join(nodes_of_interest,
+             by = 'node') %>%
+  left_join(pathway_changes,
+            by = 'FamilyID') %>%
+  select(node_description, name, minor_category, major_category, FamilyID) %>%
+  arrange(node_description)
+  # count(node_description)
+  
+count(node_changes, node_description)
+count(node_changes, FamilyID)
+  
+node_changes %>%
+  gt()
+
+individual_pathway_trees %>%
+  filter(FamilyID == 'map00983') %>%
+  pull(tree_plot) %>%
+  pluck(1)
 
 
+cafe_trees %>%
+  filter(is_significant) %>%
+  left_join(select(the_tree, node, orthofinder_code, species),
+            by = c('ortho_nodeID' = 'node')) %>%
+  rename(node = ortho_nodeID) %>%
+  inner_join(nodes_of_interest,
+             by = 'node') %>%
+  left_join(pathway_changes,
+            by = 'FamilyID') %>%
+  select(-pathway_map, -rel_pathway, -description) %>%
+  mutate(kegg_pathway = str_c(name, ' (', FamilyID, ')'), .keep = 'unused') %>%
+  select(node_description, kegg_pathway, major_category, minor_category) %>%
+  pivot_wider(names_from = node_description, values_from = kegg_pathway,
+              values_fill = NA_character_,
+              values_fn = ~str_c(., collapse = '; ')) %>%
+  select(major_category, minor_category, anemone_coral, robust_complex, acroporid_split, `acropora cervicornis`) %>%
+  arrange(major_category, minor_category) %>%
+  gt(rowname_col = 'minor_category', groupname_col = 'major_category') %>%
+  tab_header(title = 'KEGG Pathways with Significant Changes at Important Nodes of Tree') %>%
+  tab_stubhead('KEGG Pathway') %>%
+  cols_label(anemone_coral = 'Anemone - Scleractinian',
+             robust_complex = 'Robust - Complex',
+             acroporid_split = 'Acroporid Diversification',
+             `acropora cervicornis` = md('*Acropora cervicornis*')) %>%
+  # fmt(columns = 'pvalue', fns = scales::pvalue_format()) %>%
+  sub_missing(columns = where(is.character), missing_text = '-') %T>%
+  gtsave('../Results/pathway_changes_nodes.html') 

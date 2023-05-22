@@ -19,7 +19,7 @@ cluster <- new_cluster(parallel::detectCores() - 1)
 cluster_library(cluster, c('ape', 'tidytree', 'tibble', 'dplyr', 'stringr'))
 
 paths_particular_interest <- c('map04620', 'map04624', 'map00260', 'map00270', 'map01100', 'map01110', 'map01230', 'map01120', 'map04361')
-
+cafe_folder <- '../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggCopies/cafeOut'
 
 #### KEGG Pathway data ####
 kegg_paths <- read_csv('../intermediate_files/kegg_orthogroup_pathways.csv.gz',
@@ -39,7 +39,7 @@ species_pathway_keggs <- read_delim('../intermediate_files/kegg_families.txt', s
                values_to = 'n_kegg')
 
 #### Redo Cafe but with various evolutionary rate groups ####
-evolution_rate <- list.files('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut', 
+evolution_rate <- list.files(cafe_folder, 
                              pattern = 'Gamma_results.txt|Base_results.txt', recursive = TRUE,
                              full.names = TRUE) %>%
   tibble(file = .) %>%
@@ -76,13 +76,12 @@ evolution_rate %>%
   geom_point()
 
 # k_categories <- evolution_rate$k_group[which.max(evolution_rate$likelihood)]
-k_categories <- 4
+k_categories <- 1
 global_lambda <- evolution_rate$lambda[evolution_rate$k_group == k_categories]
 
 #### Families with Significant Gene Evolution ####
-
-pathway_changes <- read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', 
-                                    k_categories, '/Gamma_family_results.txt'),
+pathway_changes <- read_delim(str_c(cafe_folder, '/K', k_categories, 
+                                    if_else(k_categories == 1, '/Base_family_results.txt', '/Gamma_family_results.txt')),
                               delim = '\t', show_col_types = FALSE) %>%
   rename(FamilyID = `#FamilyID`) %>%
   full_join(kegg_paths,
@@ -142,7 +141,7 @@ pathway_changes %>%
 
 
 #### What Pathways are evolving at a signficantly different rate than others ####
-othrogroup_evolutionary_rates <- list.files('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut', 
+othrogroup_evolutionary_rates <- list.files(cafe_folder, 
                                             pattern = 'Gamma_family_likelihoods.txt|Base_family_likelihoods.txt', 
                                             recursive = TRUE,
                                             full.names = TRUE) %>%
@@ -180,7 +179,8 @@ othrogroup_evolutionary_rates %>%
 
   
 #### Redo Cafe evolutionary Rates ####
-cafe_trees <- read_lines(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', k_categories, '/Gamma_asr.tre')) %>%
+cafe_trees <- read_lines(str_c(cafe_folder, '/K', k_categories, 
+                               if_else(k_categories == 1, '/Base_asr.tre', '/Gamma_asr.tre'))) %>%
   str_subset('^ *TREE') %>%
   tibble(tree = .) %>%
   mutate(FamilyID = str_extract(tree, 'map[0-9]+'),
@@ -201,8 +201,8 @@ cafe_trees <- read_lines(str_c('../../Bioinformatics/Phylogenomics/Time Calibrat
          n_gene = str_extract(label, '[0-9]+$') %>% as.integer()) 
 
 
-gene_family_change <- read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K',
-                                       k_categories, '/Gamma_clade_results.txt'),
+gene_family_change <- read_delim(str_c(cafe_folder, '/K', k_categories,
+                                       if_else(k_categories == 1, '/Base_clade_results.txt', '/Gamma_clade_results.txt')),
                                  delim = '\t', show_col_types = FALSE) %>%
   rename(cafe_nodeID = `#Taxon_ID`) %>%
   left_join(cafe_trees %>%
@@ -211,13 +211,15 @@ gene_family_change <- read_delim(str_c('../../Bioinformatics/Phylogenomics/Time 
             by = 'cafe_nodeID')
 
 complete_family_species_cafe <- full_join(
-  read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', k_categories, '/Gamma_change.tab'), 
+  read_delim(str_c(cafe_folder, '/K', k_categories, 
+                   if_else(k_categories == 1, '/Base_change.tab', '/Gamma_change.tab')), 
              delim = '\t', show_col_types = FALSE) %>%
     pivot_longer(cols = -FamilyID,
                  names_to = 'cafe_nodeID',
                  values_to = 'gene_change'),
   
-  read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', k_categories, '/Gamma_branch_probabilities.tab'), 
+  read_delim(str_c(cafe_folder, '/K', k_categories, 
+                   if_else(k_categories == 1, '/Base_branch_probabilities.tab', '/Gamma_branch_probabilities.tab')), 
              na = 'N/A', delim = '\t', show_col_types = FALSE) %>%
     select(-...49) %>%
     rename(FamilyID = `#FamilyID`) %>%
@@ -235,7 +237,8 @@ complete_family_species_cafe <- full_join(
   # pivot_wider(names_from = 'pos_neg',
   #             values_from = 'gene_change', values_fill = 0L) %>%
   
-  left_join(read_delim(str_c('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_keggPaths/cafeOut/K', k_categories, '/Gamma_family_results.txt'),
+  left_join(read_delim(str_c(cafe_folder, '/K', k_categories, 
+                             if_else(k_categories == 1, '/Base_family_results.txt', '/Gamma_family_results.txt')),
                        delim = '\t', show_col_types = FALSE),
             by = c('FamilyID' = '#FamilyID')) %>%
   select(-`Significant at 0.05`) %>%
@@ -357,6 +360,11 @@ individual_pathway_trees <- cafe_trees %>%
 
 
 individual_pathway_trees$tree_plot[[3]]
+
+individual_pathway_trees %>%
+  filter(FamilyID %in% paths_particular_interest) %>%
+  pull(tree_plot) %>%
+  wrap_plots()
 
 
 individual_pathway_trees %>%

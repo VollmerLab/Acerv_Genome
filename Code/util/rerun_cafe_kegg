@@ -4,9 +4,9 @@ srun -t 24:00:00 --nodes=1 --cpus-per-task=24 --mem=100G --pty /bin/bash
 
 module load anaconda3; source activate cafe
 
-outdir=/scratch/j.selwyn/phylogenetics/cafe_kegg
+outdir=/scratch/j.selwyn/phylogenetics/cafe_orthogroup_copies
 species_tree=/scratch/j.selwyn/phylogenetics/time_calibration_cafe/tree.orthofinder.result.date.nexus.ultrametric
-gene_families=/scratch/j.selwyn/phylogenetics/cafe_kegg/kegg_families_gene_level.txt
+gene_families=${outdir}/orthogroup_gene_copies.txt
 
 mkdir -p ${outdir}/cafeOut
 cd ${outdir}
