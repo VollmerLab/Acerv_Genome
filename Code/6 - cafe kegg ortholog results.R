@@ -1,3 +1,5 @@
+##TODO - wtf is the increase/decrease number and why doesnt it match up with the significant counts at each node...
+
 #### Libraries ####
 library(tidyverse)
 library(magrittr)
@@ -23,6 +25,9 @@ kegg_paths <- read_csv('../intermediate_files/kegg_orthogroup_pathways.csv.gz',
 
 #### Tree ####
 the_tree <- read_rds('../intermediate_files/updated_tree.rds')
+
+simple_tree <- mutate(the_tree, label = species) %>%
+  ggtree()
 
 #### Significance of KEGG orthologs ####
 pathway_changes <- read_delim('../../Bioinformatics/Phylogenomics/Time Calibration/cafe_kegg_koCopy/cafeOut/errorModel/Base_family_results.txt',
@@ -245,6 +250,10 @@ cafe_trees %>%
               values_fn = ~str_c(., collapse = '; ')) %>%
   select(gene_name, node_description, order(colnames(.))) %>%
   arrange(node_description, gene_name) %>%
+  group_by(node_description) %>%
+  mutate(n = n()) %>%
+  ungroup %>%
+  mutate(node_description = str_c(node_description, ' (', n, ')'), .keep = 'unused') %>%
   gt(rowname_col = 'gene_name', groupname_col = 'node_description') %>%
   tab_header(title = 'KEGG Orthologs with Significant Changes at Important Nodes of Tree') %>%
   tab_stubhead('KEGG Ortholog') %>%
@@ -258,3 +267,81 @@ cafe_trees %>%
   # fmt(columns = 'pvalue', fns = scales::pvalue_format()) %>%
   sub_missing(columns = where(is.character), missing_text = '-') %T>%
   gtsave('../Results/ko_changes_nodes.html') 
+
+cafe_trees %>%
+  filter(is_significant) %>%
+  left_join(select(the_tree, node, orthofinder_code, species),
+            by = c('ortho_nodeID' = 'node')) %>%
+  rename(node = ortho_nodeID) %>%
+  inner_join(nodes_of_interest,
+             by = 'node') %>%
+  left_join(pathway_changes,
+            by = 'FamilyID') %>%
+  select(FamilyID, node_description, kegg_gene, path_data) %>%
+  unnest(path_data) %>%
+  select(-pathway_map, -rel_pathway, -description) %>%
+  mutate(kegg_pathway = str_c(name, ' (', kegg_path_id, ')'), .keep = 'unused') %>%
+  mutate(category = str_c(major_category, ' - ', minor_category), .keep = 'unused') %>%
+  mutate(gene_name = str_c(kegg_gene, ' (', FamilyID, ')'), .keep = 'unused') %>%
+  group_by(node_description) %>%
+  summarise(n = n_distinct(gene_name))
+
+#### Heatmap of Increase : Decrease at tree tips ####
+species_order <- get_taxa_name(simple_tree)
+alpha <- 0; beta <- 0
+
+species_change_prop <- cafe_trees %>%
+  left_join(select(the_tree, node, orthofinder_code, species),
+            by = c('ortho_nodeID' = 'node')) %>%
+  full_join(select(complete_family_species_cafe, FamilyID, gene_change, node_p, family_p, ortho_nodeID),
+            by = c('FamilyID', 'ortho_nodeID')) %>%
+  filter(!is.na(species)) %>%
+  filter(is_significant) %>%
+  left_join(pathway_changes,
+            by = 'FamilyID') %>%
+  select(species, orthofinder_code, gene_change, FamilyID, kegg_gene, family_p, node_p, path_data) %>%
+  unnest(path_data) %>%
+  select(-pathway_map, -rel_pathway, -description) %>%
+  mutate(change_type = case_when(gene_change < 0 ~ 'Decrease',
+                                 gene_change > 0 ~ 'Increase',
+                                 TRUE ~ 'No Change')) %>%
+  group_by(species, orthofinder_code, major_category, minor_category, change_type) %>%
+  summarise(n_gene = sum(gene_change),
+            n_ko = n_distinct(FamilyID),
+            n_path = n_distinct(kegg_path_id),
+            .groups = 'drop') %>%
+  select(-n_gene, -n_path) %>%
+  pivot_wider(names_from = change_type,
+              values_from = n_ko, 
+              values_fill = 0L) %>%
+  mutate(species = factor(species, levels = rev(species_order)),
+         total = Decrease + Increase,
+         prob_increase = (Increase + alpha) / (total + alpha + beta)) 
+
+
+species_change_prop %>%
+  
+  ggplot(aes(x = minor_category, y = species, fill = prob_increase)) +
+  geom_raster() +
+  facet_grid(~major_category, scales = 'free_x', shrink = TRUE,
+             labeller = as_labeller(~str_replace_all(., ' ', '\n')), 
+             switch = 'x') +
+  scale_x_discrete(position = 'top') +
+  scale_fill_gradient2(midpoint = 0.5, labels = scales::percent_format(),
+                       breaks = seq(0, 1, by = 0.25), limits = c(0, 1), 
+                       na.value = 'black') +
+  guides(fill = guide_colorbar(ticks.colour = 'black')) +
+  labs(x = NULL,
+       y = NULL,
+       fill = '% Significant\nKO Expanding') +
+  theme_classic() +
+  theme(axis.text.y = element_text(colour = 'black', face = 'italic'),
+        strip.background = element_blank(),
+        strip.placement = 'outside',
+        axis.text.x = element_text(colour = 'black', angle = 90, hjust = 0),
+        panel.background = element_rect(colour = 'black'))
+  
+species_change_prop %>%
+  filter(str_detect(minor_category, 'Immune')) %>% View
+  
+

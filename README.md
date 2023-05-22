@@ -28,6 +28,9 @@ Relative percentage KEGG Orthologs within each KEGG minor category with signific
 Number of KEGG pathways which expanded/contracted at each node in tree
 ![image info](Results/cafe_time_tree_ko.png)
 
-[Orthologs showing significant changes in the number of gene copies found within species]('Results/significantly_evolving_ko.html')
+[Orthologs showing significant changes in the number of gene copies found within species](Results/significantly_evolving_ko.html)
 
-[Orthologs showing significant at important splits in the Anthozoan Tree]('Results/ko_changes_nodes.html')
+[Orthologs showing significant at important splits in the Anthozoan Tree](Results/ko_changes_nodes.html)
+
+Percent of KEGG orthologs significantly changing at the tips either increasing (100) or decreasing (0) or equal frequency (50%)
+ ![image info](Results/pct_expansion_contraction.png)
