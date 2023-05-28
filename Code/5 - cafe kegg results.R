@@ -22,11 +22,13 @@ cluster_library(cluster, c('ape', 'tidytree', 'tibble', 'dplyr', 'stringr'))
 paths_particular_interest <- c('map04620', 'map04624', 'map00260', 'map00270', 'map01100', 'map01110', 'map01230', 'map01120')
 
 kegg_paths <- read_csv('../intermediate_files/kegg_orthogroup_pathways.csv.gz',
-                       show_col_types = FALSE) %>%
+                       show_col_types = FALSE) %>% 
   filter(major_category != 'Human Diseases') %>%
   select(kegg_path_id, name, description, minor_category, major_category, pathway_map, rel_pathway) %>%
   distinct %>%
   mutate(kegg_path_id = str_remove(kegg_path_id, 'path:'))
+
+kegg_paths
 
 filter(kegg_paths, kegg_path_id %in% paths_particular_interest)
 

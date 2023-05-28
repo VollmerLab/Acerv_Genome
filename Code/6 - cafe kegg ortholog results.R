@@ -340,7 +340,8 @@ species_change_prop %>%
         strip.placement = 'outside',
         axis.text.x = element_text(colour = 'black', angle = 90, hjust = 0),
         panel.background = element_rect(colour = 'black'))
-  
+ggsave('../Results/pct_expansion_contraction.png', height = 15, width = 20)
+
 species_change_prop %>%
   filter(str_detect(minor_category, 'Immune')) %>% View
   

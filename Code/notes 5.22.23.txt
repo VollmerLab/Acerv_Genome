@@ -16,8 +16,10 @@ Analysis goals:
 4) What pathways showed expansions/contractions in Acerv & the branch out to become Acerv - ie moving into the Caribbean
 
 
-Expansions/contractions - number of orthologs within KEGG pathways = major changes in genome adding/removing functionality
+Expansions/contractions - number of KEGG orthologs within KEGG pathways = major changes in genome adding/removing functionality
 	-use 'cafe_keggPaths/*'
 	-just 'error model'??
 
-
+Expansions/contractions - number gene copes within KEGG orthologs - 
+	-use 'phylogenetics/cafe_kegg_koCopy/*'
+	-
