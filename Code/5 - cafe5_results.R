@@ -46,7 +46,7 @@ full_join(cafe5_results,
           by = c('Orthogroup')) %>%
   filter(species == 'acer',
          !is.na(kegg_gene)) %>%
-  write_csv('../intermediate_files/acer_orthogroupChange.csv')
+  write_csv('../Results/acer_orthogroupChange.csv')
 
 
 
