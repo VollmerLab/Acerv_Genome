@@ -45,10 +45,11 @@ full_join(cafe5_results,
           orthogroup_kegg,
           by = c('Orthogroup')) %>%
   filter(species == 'acer',
-         !is.na(kegg_gene)) %>%
+         !is.na(kegg_gene),
+         family_probability < 0.05,
+         node_probability < 0.05) %>%
+  janitor::remove_empty(which = 'cols') %>%
   write_csv('../Results/acer_orthogroupChange.csv')
 
 
 
-species_kegg %>%
-  filter(species == 'amic_shinzato')
