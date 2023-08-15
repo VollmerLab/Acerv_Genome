@@ -130,10 +130,10 @@ gene_changes <- acer_changes %>%
                select(minor),
              by = 'minor') %>%
   mutate(delta = if_else(gene_change > 0, 'expand', 'contract')) %>%
-  select(major, minor, pathway, kegg_gene, kegg_orthology, delta) %>%
-  distinct %>%
+  group_by(major, minor, pathway, kegg_gene, kegg_orthology, delta) %>%
+  summarise(n_ortho = n_distinct(Orthogroup), .groups = 'drop') %>%
   mutate(major_minor = str_c(major, minor, sep = ' - '),
          .keep = 'unused') %>%
   pivot_wider(names_from = major_minor, values_from = pathway, values_fn = ~str_c(., collapse = ';;')) %>% 
   arrange(kegg_gene) 
-write_csv('../Results/expansion_contractions_ora.csv')
+write_csv(gene_changes, '../Results/expansion_contractions_ora.csv')
