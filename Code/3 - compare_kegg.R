@@ -46,7 +46,7 @@ species_kegg %>%
   mutate(exists = TRUE) %>%
   pivot_wider(names_from = 'species',
               values_from = 'exists',
-              values_fill = FALSE) 
+              values_fill = FALSE) %>% View
 
 
 #### Check KEGG Assignments ####
@@ -112,6 +112,10 @@ emmeans(ortho_prop_kegg, ~species, type = 'response') %>%
        y = NULL) +
   theme_classic()
 
+emmeans(ortho_prop_kegg, ~species, type = 'response') %>%
+  tidy(conf.int = TRUE) %>%
+  filter(species == 'acer')
+
 summary_stats_kegg %>%
   mutate(species = fct_reorder(species, unique_kegg)) %>%
   
@@ -155,6 +159,17 @@ path_posthoc <- chisq.posthoc.test(path_matrix, method = 'fdr') %>%
 # count(major, minor, pathway) %>%
 # arrange(-n)
 
+path_posthoc %>%
+  filter(species == 'acer')
+
+path_posthoc %>%
+  count(species) %>%
+  arrange(-n)
+
+path_posthoc %>%
+  count(major, minor, pathway) %>%
+  arrange(-n)
+
 #### Do same as above but with different groupings ####
 summarize_pathways <- function(data, count_var, group_var){
   group_by(data, !!!syms(unique(c('species', group_var)))) %>%
@@ -185,4 +200,29 @@ all_kegg_comps <- expand_grid(counting = c('gene_id', 'Orthogroup', 'kegg_orthol
                           separate(Dimension, into = c('major', 'minor', 'pathway'), sep = ';;')))
 
 all_kegg_comps %>%
-  filter(counting == 'gene_id')
+  ungroup %>%
+  filter(level == 'pathway',
+         counting != 'kegg_orthology') %>%
+  select(counting, species_inclusion,
+         parameter, statistic, p.value)
+
+
+all_kegg_comps %>%
+  ungroup %>%
+  filter(counting == 'gene_id',
+         species_inclusion == 'all',
+         level == 'pathway') %>%
+  select(posthoc) %>%
+  unnest(posthoc) %>%
+  # filter(species == 'acer') %>% pull(pathway)
+  # count(species) %>% arrange(-n)
+  # filter(species == 'amil_fuller')
+  
+  # filter(str_detect(species, '^a'),
+  #        species != 'aten', species != 'amil_fuller') %>%
+  # # count(species) %>% arrange(-n)
+  # count(major, minor, pathway) %>%
+  # filter(n == 15) %>% pull(pathway)
+  
+  count(major, minor, pathway) %>%
+  arrange(-n)
