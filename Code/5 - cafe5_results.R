@@ -1,3 +1,9 @@
+##Rerun cafe based on orthofinder results 
+#Rows are KEGG orthologs with numbers filled in being the number of HOGs
+# - rework orthofinder step (8 in markdown)
+# - make spawn cafe5 using HOGS and KEGGS
+# - need to rerun KEGG/Entap
+
 #### Libraries ####
 library(tidyverse)
 library(magrittr)
@@ -41,99 +47,131 @@ cafe5_results <- full_join(read_delim('../../Bioinformatics/Phylogenomics/Time C
               select(-`Significant at 0.05`),
             by = 'FamilyID') %>%
   
-  rename(Orthogroup = FamilyID) %>%
+  rename(kegg_orthology = FamilyID) %>%
   mutate(species = str_extract(tree_node, '[a-z_]+')) %>%
   filter(!is.na(species)) %>%
   select(-tree_node) %>%
-  select(Orthogroup, species, n_gene, gene_change, family_probability, node_probability)
+  select(kegg_orthology, species, n_gene, gene_change, family_probability, node_probability)
 
-
-orthogroup_kegg <- read_csv('../intermediate_files/kegg_gene_pathways.csv.gz', 
-                            show_col_types = FALSE, guess_max = 1e5)
+orthogroup_kegg <- read_csv('../../Bioinformatics/Phylogenomics/Annotations/species_kegg_orthogroup.csv.gz', 
+                         show_col_types = FALSE, guess_max = 1e5) %>%
+  select(kegg_gene, kegg_orthology, contains(' - ')) %>%
+  distinct %>%
+  janitor::remove_empty(which = c('rows', 'cols'))
 
 #### What expanded/contracted in Acer ####
-acer_changes <- full_join(cafe5_results, 
+#swap to pathway based and count # of orthogroups in each pathway
+acer_kegg_ortho <- full_join(cafe5_results, 
           orthogroup_kegg,
-          by = c('Orthogroup')) %>%
+          by = c('kegg_orthology')) %>%
   filter(species == 'acer',
-         !is.na(kegg_gene),
-         family_probability < 0.05,
-         node_probability < 0.05) %>%
+         !is.na(kegg_gene)) 
+
+acer_kegg_ortho %>%
+  filter(kegg_orthology == 'ko:K00002')
+
+acer_kegg_ortho %>%
+  filter(family_probability < 0.05,
+       node_probability < 0.05) %>%
   janitor::remove_empty(which = 'cols') %T>%
   write_csv('../Results/acer_orthogroupChange.csv')
 
 
-all_acer_paths <- full_join(cafe5_results, 
-          orthogroup_kegg,
-          by = c('Orthogroup')) %>%
-  filter(species == 'acer',
-         !is.na(kegg_gene)) %>%
-  pivot_longer(cols = -c(Orthogroup:prop_top_hits),
-               names_to = c('major', 'minor'),
-               names_pattern = '(.*) - (.*)',
-               values_to = 'pathway', 
-               values_drop_na = TRUE) %>%
-  rowwise %>%
-  mutate(pathway = str_split(pathway, '; ')) %>%
-  unnest(pathway) %>%
-  group_by(major, minor) %>%
-  summarise(total_paths = n_distinct(pathway),
-            .groups = 'drop')
-  
+acer_ortho <- acer_kegg_ortho %>%
+  pivot_longer(cols = -c(kegg_orthology:kegg_gene),
+             names_to = c('major_minor'),
+             values_to = 'pathway', 
+             values_drop_na = TRUE) %>%
+  group_by(across(kegg_orthology:major_minor)) %>%
+  reframe(pathway = str_split(pathway, ';') %>% unlist %>% str_trim) %>%
+  select(kegg_gene, kegg_orthology, major_minor, pathway, n_gene, gene_change, family_probability, node_probability) %>%
+  separate(major_minor, 
+         sep = ' - ', 
+         into = c('major', 'minor'), 
+         extra = 'merge') %>%
+  filter(!minor %in% c('Cellular community - prokaryotes',
+                       'Information processing in viruses'))
 
-acer_expand_contract <- acer_changes %>%
-  pivot_longer(cols = -c(Orthogroup:prop_top_hits),
-               names_to = c('major', 'minor'),
-               names_pattern = '(.*) - (.*)',
-               values_to = 'pathway', 
-               values_drop_na = TRUE) %>%
-  rowwise %>%
-  mutate(pathway = str_split(pathway, '; ')) %>%
-  unnest(pathway) %>%
-  group_by(major, minor) %>%
-  summarise(expansion = n_distinct(pathway[gene_change > 0]),
-            contraction = n_distinct(pathway[gene_change < 0]),
-            .groups = 'drop') 
 
-pathway_overrep <- full_join(acer_expand_contract, 
-          all_acer_paths,
-          by = c('major', 'minor')) %>%
-  filter(total_paths > 5) %>%
-  
-  mutate(across(c(expansion, contraction), ~replace_na(., 0L))) %>%
-  mutate(total_expansion = sum(expansion),
-         total_contraction = sum(contraction),
-         total_total = sum(total_paths)) %>%
-  rowwise(major, minor) %>%
-  mutate(expansion_test = row_fisher(expansion, total_paths, total_expansion, total_total, 'greater'),
-            contraction_test = row_fisher(contraction, total_paths, total_contraction, total_total, 'greater')) %>%
-  select(-total_expansion, -total_contraction, -total_total) %>%
+pathway_overrep <- acer_ortho %>%
+  group_by(major, minor, pathway) %>%
+  summarise(n_expand = n_distinct(kegg_orthology[node_probability < 0.05 & gene_change > 0]),
+            n_contract = n_distinct(kegg_orthology[node_probability < 0.05 & gene_change < 0]),
+            path_ortho = n_distinct(kegg_orthology),
+            .groups = 'rowwise') %>%
+  bind_cols(summarise(acer_ortho,
+                      total_expansion = n_distinct(kegg_orthology[node_probability < 0.05 & gene_change > 0]),
+                      total_contraction = n_distinct(kegg_orthology[node_probability < 0.05 & gene_change < 0]),
+                      total_ortho = n_distinct(kegg_orthology))) %>%
+  # left_join(group_by(acer_ortho, major, minor) %>%
+  #             summarise(total_expansion = n_distinct(Orthogroup[node_probability < 0.05 & gene_change > 0]),
+  #                       total_contraction = n_distinct(Orthogroup[node_probability < 0.05 & gene_change < 0]),
+  #                       total_ortho = n_distinct(Orthogroup),
+  #                       .groups = 'drop'),
+  #           by = c('major', 'minor')) %>%
+  mutate(expansion_test = row_fisher(n_expand, path_ortho, total_expansion, total_ortho, 'greater') %>%
+           rename_with(~str_c('expansion', ., sep = '_')),
+         contraction_test = row_fisher(n_contract, path_ortho, total_contraction, total_ortho, 'greater') %>%
+           rename_with(~str_c('contraction', ., sep = '_'))) %>%
+  ungroup %>%
+  unnest(c(expansion_test, contraction_test)) %>%
+  # group_by(major, minor) %>%
+  mutate(expansion_fdr = p.adjust(expansion_p.value, method = 'fdr'),
+         contraction_fdr = p.adjust(contraction_p.value, method = 'fdr')) %>%
   ungroup
 
-pathway_overrep %>%
-  filter(expansion_test$p.value < 0.05 | contraction_test$p.value < 0.05) %T>%
-  print %>%
-  select(-expansion_test) 
-  
 
-gene_changes <- acer_changes %>%
-  pivot_longer(cols = -c(Orthogroup:prop_top_hits),
-               names_to = c('major', 'minor'),
-               names_pattern = '(.*) - (.*)',
-               values_to = 'pathway', 
-               values_drop_na = TRUE) %>%
-  rowwise %>%
-  mutate(pathway = str_split(pathway, '; ')) %>%
-  unnest(pathway) %>%
-  inner_join(pathway_overrep %>%
-               filter(expansion_test$p.value < 0.05 | contraction_test$p.value < 0.05) %>%
-               select(minor),
-             by = 'minor') %>%
-  mutate(delta = if_else(gene_change > 0, 'expand', 'contract')) %>%
-  group_by(major, minor, pathway, kegg_gene, kegg_orthology, delta) %>%
-  summarise(n_ortho = n_distinct(Orthogroup), .groups = 'drop') %>%
-  mutate(major_minor = str_c(major, minor, sep = ' - '),
-         .keep = 'unused') %>%
-  pivot_wider(names_from = major_minor, values_from = pathway, values_fn = ~str_c(., collapse = ';;')) %>% 
-  arrange(kegg_gene) 
-write_csv(gene_changes, '../Results/expansion_contractions_ora.csv')
+#https://en.wikipedia.org/wiki/Fisher%27s_method
+minor_cat_significance <- pathway_overrep %>%
+  group_by(major, minor) %>%
+  summarise(df = 2 * n(),
+            expansion_x2 = -2 * sum(log(expansion_p.value)),
+            contraction_x2 = -2 * sum(log(contraction_p.value)),
+            .groups = 'drop') %>%
+  mutate(expansion_p.value = pchisq(expansion_x2, df, lower.tail = FALSE),
+         contraction_p.value = pchisq(contraction_x2, df, lower.tail = FALSE)) %>%
+  mutate(expansion_fdr = p.adjust(expansion_p.value, method = 'fdr'),
+         contraction_fdr = p.adjust(contraction_p.value, method = 'fdr')) %>%
+  filter(expansion_fdr < 0.05 | contraction_fdr < 0.05)
+minor_cat_significance
+write_csv(minor_cat_significance, '../Results/expand_contract_minor_pathways.csv')
+
+
+overrep_pathways <- pathway_overrep %>%
+  inner_join(minor_cat_significance %>%
+               select(major, minor, contains('fdr')) %>%
+               mutate(across(contains('fdr'), ~. < 0.05)) %>%
+               pivot_longer(cols = contains('fdr'),
+                            names_to = 'overrep_direction',
+                            names_pattern = '(.*)_fdr',
+                            values_to = 'significance') %>%
+               filter(significance) %>%
+               select(-significance),
+             by = c('major', 'minor'),
+             relationship = "many-to-many") %>%
+  filter((contraction_p.value < 0.05 & overrep_direction == 'contraction') | 
+           (expansion_p.value < 0.05 & overrep_direction == 'expansion'))
+write_csv(overrep_pathways, '../Results/expand_contract_pathways.csv')
+
+kegg_change <- overrep_pathways %>%
+  select(major, minor, pathway, contains('p.value')) %>%
+  mutate(across(contains('p.value'), ~. < 0.05)) %>%
+  pivot_longer(cols = contains('p.value'),
+               names_to = 'overrep_direction',
+               names_pattern = '(.*)_p.value',
+               values_to = 'significance') %>%
+  filter(significance) %>%
+  # filter(overrep_direction == 'expansion')
+  
+  select(-significance) %>%
+  left_join(acer_ortho,
+            by = c('major', 'minor', 'pathway'),
+            relationship = "many-to-many") %>%
+  filter((overrep_direction == 'contraction' & gene_change < 0) |
+           (overrep_direction == 'expansion' & gene_change > 0)) %>%
+  filter(node_probability < 0.05) %>%
+  pivot_wider(names_from = c('major', 'minor'),
+              values_from = pathway,
+              names_sep = ' - ',
+              values_fn = ~str_c(., collapse = ';;'))
+write_csv(kegg_change, '../Results/expand_contract_keggs.csv')

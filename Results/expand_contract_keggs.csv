@@ -1,0 +1,48 @@
+overrep_direction,kegg_gene,kegg_orthology,n_gene,gene_change,family_probability,node_probability,Cellular Processes - Cellular community - eukaryotes,Environmental Information Processing - Signal transduction,Environmental Information Processing - Signaling molecules and interaction,Organismal Systems - Digestive system,Organismal Systems - Immune system,Organismal Systems - Nervous system,Organismal Systems - Sensory system
+contraction,epidermal growth factor,ko:K04357,0,-1,0,0.0320824,Focal adhesion (map04510);;Gap junction (map04540);;Gap junction (map04540),ErbB signaling pathway (map04012);;HIF-1 signaling pathway (map04066);;JAK-STAT signaling pathway (map04630);;PI3K-Akt signaling pathway (map04151);;Rap1 signaling pathway (map04015);;Ras signaling pathway (map04014),NA,NA,NA,NA,NA
+contraction,tenascin,ko:K06252,6,-2,0,0.00649055,Focal adhesion (map04510),PI3K-Akt signaling pathway (map04151),NA,NA,NA,NA,NA
+contraction,integrin alpha 4,ko:K06483,0,-1,0,0.0320824,Focal adhesion (map04510),PI3K-Akt signaling pathway (map04151),NA,NA,Hematopoietic cell lineage (map04640);;Leukocyte transendothelial migration (map04670),NA,NA
+contraction,classical protein kinase C beta type [EC:2.7.11.13],ko:K19662,0,-1,0,0.0320824,Focal adhesion (map04510);;Gap junction (map04540);;Gap junction (map04540),ErbB signaling pathway (map04012);;HIF-1 signaling pathway (map04066);;Rap1 signaling pathway (map04015);;Ras signaling pathway (map04014);;VEGF signaling pathway (map04370),NA,Carbohydrate digestion and absorption (map04973);;Salivary secretion (map04970),Leukocyte transendothelial migration (map04670);;Natural killer cell mediated cytotoxicity (map04650);;Neutrophil extracellular trap formation (map04613),NA,NA
+expansion,dopamine receptor D1,ko:K04144,15,4,0,1.34631e-4,Gap junction (map04540);;Gap junction (map04540),NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,dopamine receptor D2,ko:K04145,3,1,0.021,0.0216927,Gap junction (map04540);;Gap junction (map04540),Rap1 signaling pathway (map04015),Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,5-hydroxytryptamine receptor 2,ko:K04157,3,1,0.013,0.0216927,Gap junction (map04540);;Gap junction (map04540),NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,Inflammatory mediator regulation of TRP channels (map04750)
+expansion,tubulin alpha,ko:K07374,4,1,0.001,0.0325151,Gap junction (map04540);;Gap junction (map04540),NA,NA,NA,NA,NA,NA
+contraction,tubulin beta,ko:K07375,5,-2,0.001,0.00496256,Gap junction (map04540);;Gap junction (map04540),NA,NA,NA,NA,NA,NA
+contraction,protocadherin Fat 4,ko:K16669,29,-4,0,0.00239257,NA,Hippo signaling pathway - multiple species (map04392),NA,NA,NA,NA,NA
+contraction,tyrosine-protein phosphatase non-receptor type 11 [EC:3.1.3.48],ko:K07293,0,-1,0,0.0320824,NA,JAK-STAT signaling pathway (map04630);;Ras signaling pathway (map04014),NA,NA,Leukocyte transendothelial migration (map04670);;Natural killer cell mediated cytotoxicity (map04650),NA,NA
+contraction,pathogenesis-related protein 1,ko:K13449,28,-3,0.004,0.0133466,NA,MAPK signaling pathway - plant (map04016),NA,NA,NA,NA,NA
+contraction,mitogen-activated protein kinase kinase 2 [EC:2.7.12.2],ko:K20603,0,-1,0,0.0320824,NA,MAPK signaling pathway - plant (map04016),NA,NA,NA,NA,NA
+contraction,fibroblast growth factor receptor 4 [EC:2.7.10.1],ko:K05095,6,-2,0.001,0.00649055,NA,PI3K-Akt signaling pathway (map04151);;Rap1 signaling pathway (map04015);;Ras signaling pathway (map04014),NA,NA,NA,NA,NA
+expansion,adenosine receptor A2a,ko:K04266,28,3,0,0.017956,NA,Rap1 signaling pathway (map04015),Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,adenosine receptor A2b,ko:K04267,19,4,0,4.09797e-4,NA,Rap1 signaling pathway (map04015),Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,insulin-like growth factor 1 receptor [EC:2.7.10.1],ko:K05087,3,1,0.016,0.0216927,NA,Rap1 signaling pathway (map04015),NA,NA,NA,NA,NA
+expansion,trypsin [EC:3.4.21.4],ko:K01312,4,1,0.025,0.0325151,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,plasminogen [EC:3.4.21.7],ko:K01315,3,1,0.006,0.0216927,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,Complement and coagulation cascades (map04610),NA,NA
+expansion,adrenergic receptor beta-2,ko:K04142,32,9,0,5.11015e-9,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,5-hydroxytryptamine receptor 1,ko:K04153,11,3,0,9.63399e-4,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,Taste transduction (map04742)
+expansion,melanocortin 4 receptor,ko:K04202,8,3,0,2.51706e-4,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,melanocortin 5 receptor,ko:K04203,16,4,0,1.84571e-4,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,neuropeptide Y receptor type 4,ko:K04206,2,1,0.031,0.010846,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,tachykinin receptor 2,ko:K04223,54,14,0,2.24729e-12,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,adenosine receptor A1,ko:K04265,6,2,0,0.00478694,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,melatonin receptor type 1A,ko:K04285,20,4,0,0.00051411200000000005,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,trace amine associated receptor,ko:K05051,63,18,0,1.95747e-16,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,gamma-aminobutyric acid receptor subunit alpha,ko:K05175,2,1,0,0.010846,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,Taste transduction (map04742)
+expansion,neuropeptide FF receptor 2,ko:K08375,83,8,0,1.31027e-4,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+expansion,pyroglutamylated RFamide peptide receptor,ko:K08378,12,3,0,0.0013374,NA,NA,Neuroactive ligand-receptor interaction (map04080),NA,NA,NA,NA
+contraction,taste receptor type 1 member 2,ko:K04625,0,-1,0,0.0320824,NA,NA,NA,Carbohydrate digestion and absorption (map04973),NA,NA,NA
+contraction,lysozyme C [EC:3.2.1.17],ko:K13915,0,-1,0,0.0320824,NA,NA,NA,Salivary secretion (map04970),NA,NA,NA
+contraction,proteasome activator subunit 3 (PA28 gamma),ko:K06698,0,-1,0,0.0320824,NA,NA,NA,NA,Antigen processing and presentation (map04612),NA,NA
+expansion,CD59 antigen,ko:K04008,2,1,0.004,0.010846,NA,NA,NA,NA,Complement and coagulation cascades (map04610);;Hematopoietic cell lineage (map04640),NA,NA
+contraction,protein S,ko:K03908,0,-1,0,0.0320824,NA,NA,NA,NA,Complement and coagulation cascades (map04610),NA,NA
+contraction,neprilysin [EC:3.4.24.11],ko:K01389,0,-1,0,0.0320824,NA,NA,NA,NA,Hematopoietic cell lineage (map04640),NA,NA
+contraction,"NACHT, LRR and PYD domains-containing protein 1",ko:K12798,0,-2,0,2.73998e-4,NA,NA,NA,NA,NOD-like receptor signaling pathway (map04621),NA,NA
+contraction,"NACHT, LRR and PYD domains-containing protein 7",ko:K20864,0,-2,0,2.73998e-4,NA,NA,NA,NA,NOD-like receptor signaling pathway (map04621),NA,NA
+contraction,"NACHT, LRR and PYD domains-containing protein 12",ko:K20865,13,-8,0,7.6913e-9,NA,NA,NA,NA,NOD-like receptor signaling pathway (map04621),NA,NA
+contraction,histone H2A,ko:K11251,2,-2,0,0.00151255,NA,NA,NA,NA,Neutrophil extracellular trap formation (map04613),NA,NA
+contraction,histone H3,ko:K11253,3,-4,0,5.21429e-6,NA,NA,NA,NA,Neutrophil extracellular trap formation (map04613),NA,NA
+contraction,histone H4,ko:K11254,0,-3,0,8.12083e-6,NA,NA,NA,NA,Neutrophil extracellular trap formation (map04613),NA,NA
+contraction,"solute carrier family 6 (neurotransmitter transporter, dopamine) member 3",ko:K05036,0,-1,0,0.0320824,NA,NA,NA,NA,NA,Synaptic vesicle cycle (map04721),NA
+contraction,protein unc-13 A/B/C,ko:K15293,8,-2,0,0.0100482,NA,NA,NA,NA,NA,Synaptic vesicle cycle (map04721),NA
+expansion,serine/threonine-protein phosphatase PP1 catalytic subunit [EC:3.1.3.16],ko:K06269,3,1,0.015,0.0216927,NA,NA,NA,NA,NA,NA,Inflammatory mediator regulation of TRP channels (map04750)
+expansion,"calcium/calmodulin-dependent 3',5'-cyclic nucleotide phosphodiesterase [EC:3.1.4.17]",ko:K13755,2,1,0.047,0.010846,NA,NA,NA,NA,NA,NA,Taste transduction (map04742)
