@@ -1,4 +1,4 @@
-# Comparative_Genomics
+# Acerv_Genome
  Compare A. cervicornis genome to other anthazoans
 
 Add composition/mito etc.
