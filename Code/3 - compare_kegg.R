@@ -24,6 +24,20 @@ process_posthoc <- function(post){
 species_kegg <- read_csv('../../Bioinformatics/Phylogenomics/Annotations/species_kegg_orthogroup.csv.gz', 
                          show_col_types = FALSE, guess_max = 1e5)
 
+functional_annotations <- read_rds('../../Bioinformatics/genome_annotation/k2_functionalAnnotations.rds')
+
+#### Count Genes & percent with a kegg ####
+species_kegg %>%
+  group_by(species) %>%
+  summarise(n_gene = n_distinct(gene_id),
+            n_kegg = n_distinct(gene_id[!is.na(kegg_gene)]),
+            
+            n_ortho = n_distinct(Orthogroup),
+            n_kegg_ortho = n_distinct(Orthogroup[!is.na(kegg_gene)])) %>%
+  mutate(pct_gene = n_kegg / n_gene,
+         pct_ortho = n_kegg_ortho / n_ortho) %>%
+  select(species, pct_ortho)
+
 #### Just Acer KEGGS ####
 species_kegg %>%
   group_by(Orthogroup) %>%
@@ -34,6 +48,94 @@ species_kegg %>%
   select(-Orthogroup:-gene_id, -prop_top_hits) %>%
   distinct %>%
   janitor::remove_empty(which = 'cols')
+
+species_kegg %>%
+  filter(kegg_orthology %in% c('ko:K03654', 'ko:K07497', 'ko:K08378')) %>%
+  count(Orthogroup, species) %>%
+  pivot_wider(names_from = species, 
+              values_from = n) %>% View
+
+species_kegg %>%
+  group_by(Orthogroup) %>%
+  filter(n_distinct(species) == 1) %>%
+  filter(species == 'acer') %>%
+  ungroup 
+
+unique_acer <- species_kegg %>%
+  group_by(Orthogroup) %>%
+  filter(n_distinct(species) == 1) %>%
+  filter(species == 'acer') %>%
+  ungroup %>%
+  select(Orthogroup, gene_id) %>%
+  distinct %>%
+  mutate(gene_id = str_remove(gene_id, '-RA$')) %>%
+  left_join(functional_annotations,
+            by = c('gene_id' = 'qseqid')) %>% 
+  filter(!is.na(has_swissprot))
+
+swissprot_unique <- unique_acer %>%
+  filter(!is.na(swissprot_name)) %>%
+  select(Orthogroup, swissprot_id, swissprot_name) %>%
+  distinct %>%
+  mutate(swissprot = str_c(swissprot_name, ' (', swissprot_id, ')'),
+         .keep = 'unused') %>%
+  group_by(Orthogroup) %>%
+  mutate(id_number = str_c('swissprot_', row_number())) %>%
+  pivot_wider(names_from = id_number, values_from = swissprot) %>%
+  ungroup
+
+eggnog_unique <- unique_acer %>%
+  select(Orthogroup, gene_id, entap_results) %>%
+  unnest(entap_results) %>% 
+  select(Orthogroup, gene_id, `EggNOG Predicted Gene`, `EggNOG Description`) %>%
+  filter(!is.na(`EggNOG Predicted Gene`)) %>%
+  select(-gene_id) %>%
+  mutate(eggnog_pred = str_c(`EggNOG Description`, ' (', `EggNOG Predicted Gene`, ')'),
+         .keep = 'unused') %>%
+  distinct %>%
+  group_by(Orthogroup) %>%
+  mutate(id_number = str_c('eggnog_', row_number())) %>%
+  pivot_wider(names_from = id_number, values_from = eggnog_pred) %>%
+  ungroup
+
+pfam_unique <- unique_acer %>%
+  select(Orthogroup, gene_id, interproscan_results) %>%
+  unnest(interproscan_results) %>%
+  filter(analysis == 'Pfam') %>%
+  select(Orthogroup, signature_accession, signature_description) %>%
+  distinct() %>%
+  filter(!signature_accession %in% c('PF18701', 'PF20209')) %>%
+  mutate(pfam = str_c(signature_description, ' (', signature_accession, ')'),
+         .keep = 'unused') %>%
+  distinct %>%
+  group_by(Orthogroup) %>%
+  mutate(id_number = str_c('pfam_', row_number())) %>%
+  pivot_wider(names_from = id_number, values_from = pfam) %>%
+  ungroup
+
+kegg_unique <- species_kegg %>%
+  group_by(Orthogroup) %>%
+  filter(n_distinct(species) == 1) %>%
+  filter(species == 'acer') %>%
+  ungroup %>%
+  filter(!is.na(kegg_gene)) %>%
+  select(Orthogroup, kegg_gene, kegg_orthology) %>%
+  distinct %>%
+  mutate(kegg = str_c(kegg_gene, ' (', kegg_orthology, ')'),
+         .keep = 'unused') %>%
+  group_by(Orthogroup) %>%
+  mutate(id_number = str_c('kegg_', row_number())) %>%
+  pivot_wider(names_from = id_number, values_from = kegg) %>%
+  ungroup
+
+full_join(swissprot_unique,
+          eggnog_unique,
+          by = join_by(Orthogroup)) %>%
+  full_join(pfam_unique,
+            by = join_by(Orthogroup)) %>%
+  full_join(kegg_unique,
+            by = join_by(Orthogroup)) %>%
+  write_csv('../Results/unique_kegg_acer.csv')
 
 #### Check Cystine biosynthesis ####
 shouldnt_have <- c('K01697', 'K10150')
@@ -87,6 +189,12 @@ emmeans(gene_prop_kegg, ~species, type = 'response') %>%
        y = NULL) +
   theme_classic()
 
+acer_vs_acropora <- c(-1/16, -1/16, 1, -1/16, -1/16, -1/16, -1/16, -1/16, 
+                      -1/16, -1/16, -1/16, -1/16, -1/16, -1/16, -1/16, 
+                      0, -1/16, -1/16, 0, 0, 0, 0, 0, 0)
+emmeans(gene_prop_kegg, ~species, type = 'link') %>%
+  contrast(method = list(acer_vs_acropora = acer_vs_acropora))
+
 #### Prop Orthogroups with KEGG ####
 ortho_prop_kegg <- glm(cbind(n_ortho_w_kegg, n_ortho - n_ortho_w_kegg) ~ species, 
                        data = summary_stats_kegg,
@@ -111,6 +219,24 @@ emmeans(ortho_prop_kegg, ~species, type = 'response') %>%
   labs(x = 'KEGG Annotated Orthogroups (%)',
        y = NULL) +
   theme_classic()
+
+acer_vs_acropora <- c(-1/16, -1/16, 1, -1/16, -1/16, -1/16, -1/16, -1/16, 
+                      -1/16, -1/16, -1/16, -1/16, -1/16, -1/16, -1/16, 
+                      0, -1/16, -1/16, 0, 0, 0, 0, 0, 0)
+
+acropora_vs_out <- c(1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 
+                     1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 
+                     -1/5, 1/17, 1/17, -1/5, 0, 0, -1/5, -1/5, -1/5)
+
+acropora_vs_montipora <- c(1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 
+                           1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 1/17, 
+                           0, 1/17, 1/17, 0, -1/2, -1/2, 0, 0, 0)
+
+emmeans(ortho_prop_kegg, ~species, type = 'link') %>%
+  contrast(method = list(acer_vs_acropora = acer_vs_acropora,
+                         acropora_vs_out = acropora_vs_out,
+                         acropora_vs_montipora = acropora_vs_montipora))
+
 
 emmeans(ortho_prop_kegg, ~species, type = 'response') %>%
   tidy(conf.int = TRUE) %>%
@@ -139,6 +265,26 @@ species_paths <- species_kegg %>%
   filter(!minor %in% c('Cellular community - prokaryotes',
                        'Information processing in viruses'))
 
+#### Distribution of Acer paths ####
+acer_pathways <- species_paths %>%
+  filter(species == 'acer') %>%
+  group_by(major, minor, pathway) %>%
+  summarise(n_ortho = n_distinct(Orthogroup),
+            .groups = 'drop') %>%
+  filter(n_ortho > 0) %>%
+  mutate(pathway = str_c(major, minor, pathway, sep = ';;'), .keep = 'unused', .before = everything()) %>%
+  column_to_rownames('pathway') 
+
+chisq.test(acer_pathways)
+
+species_paths %>%
+  filter(species == 'acer') %>%
+  group_by(major) %>%
+  summarise(n_ortho = n_distinct(Orthogroup),
+            .groups = 'drop') %>%
+  mutate(prop = n_ortho / sum(n_ortho))
+
+#### Across all species ####
 path_matrix <- species_paths %>%
   filter(str_detect(species, '^a'),
          species != 'aten') %>%
@@ -152,6 +298,8 @@ path_matrix <- species_paths %>%
   column_to_rownames('pathway')
 
 chisq.test(path_matrix, simulate.p.value = FALSE)
+fisher.test(path_matrix, simulate.p.value = TRUE)
+
 path_posthoc <- chisq.posthoc.test(path_matrix, method = 'fdr') %>%
   process_posthoc %>%
   filter(fdr < 0.05) %>%

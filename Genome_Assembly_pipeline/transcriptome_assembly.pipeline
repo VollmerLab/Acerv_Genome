@@ -1,0 +1,93 @@
+#!/bin/bash
+
+#SBATCH --job-name=preprocess_pipeline
+#SBATCH --partition=short
+#SBATCH --time=1-00:00:00
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
+
+#outdir=/scratch/j.selwyn/genome_annotation/flyeHQ_9-August-2022/trinity
+#ref_genome=/work/vollmer/k2_nanopore_genome/k2_flyeHQ_polish.fa
+#samples_file=/scratch/j.selwyn/genome_annotation/flyeHQ_9-August-2022/samples_file.txt
+#se_or_pe=SE
+#maxIntron=100000
+#fastq_files=/scratch/j.selwyn/genome_annotation/flyeHQ_9-August-2022/repair/*fastq.gz
+
+outdir=${1}
+ref_genome=${2} #assembled reference genome
+se_or_pe=${3} #the minimum contig length to retain in reference genome
+maxIntron=${4}; shift 4
+fastq_files="$@"
+
+scriptDir=/work/vollmer/software/jds_scripts
+samples_file=${outdir}/../samples_file.txt
+
+genome_name=$(echo ${ref_genome##*/} | sed -e "s/.fasta$//" | sed -e "s/.fa$//")
+
+#Make and move to directory - this is where SLURM out files will go
+mkdir -p ${outdir}/slurm
+cd ${outdir} #move to outdir for if temp files are made
+
+#Setup for arrays
+tmp=( ${fastq_files} )
+indir=${tmp%/*}
+sample_names=( $(ls ${fastq_files} | sed -e 's!.*/!!' | sed -e 's/[\._][rR][12]\.*\..*//' | sort -u) )
+extensions=( $(ls ${fastq_files} | sed -e 's!.*/!!' | sed -e 's/^.*\([\._][rR][12]\)/\1/g' | sort -u) )
+number_of_individuals=${#sample_names[@]}
+number_of_extensions=${#extensions[@]}
+number_of_samples=$((number_of_extensions * number_of_individuals))
+
+#Map reads to genome for Trinity
+#Index Genome
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/indexGenome_%j.output \
+  ${scriptDir}/indexGenome.slurm \
+    ${outdir} \
+    ${ref_genome} \
+    RNA)
+indexID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Genome Indexing job: ${indexID}"
+
+#Mapping Array
+JOBID=$(sbatch \
+  --dependency=afterany:${indexID} \
+  --output=${outdir}/slurm/mapGenome_%A_%a.output \
+  --array=0-$((${number_of_individuals}-1))%30 \
+  ${scriptDir}/assessMapping.slurm \
+    ${outdir} \
+    ${se_or_pe} \
+    RNA \
+    ${fastq_files})
+mapID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Genome Mapping job: ${mapID}"
+
+#Merge Mapping
+JOBID=$(sbatch \
+  --dependency=afterany:${mapID} \
+  --output=${outdir}/slurm/mergeMap_%j.output \
+  ${scriptDir}/mergeMap.slurm \
+    ${outdir} \
+    ${ref_genome})
+mergeMapID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Mapping Merge job: ${mergeMapID}"
+
+#Run Trinity
+JOBID=$(sbatch \
+  --dependency=afterany:${mergeMapID} \
+  --output=${outdir}/slurm/trinity_%j.output \
+  ${scriptDir}/assembleTrinity.slurm \
+    ${outdir}/${genome_name}_sorted.bam \
+    ${maxIntron})
+trinityID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Trinity job: ${trinityID}"
+
+#Assess Trinity
+JOBID=$(sbatch \
+  --dependency=afterany:${trinityID} \
+  --output=${outdir}/slurm/trinityAssess_%j.output \
+  ${scriptDir}/assessTrinity.slurm \
+    ${outdir}/${genome_name}_trinity-gg.fasta \
+    ${samples_file})
+assessTrinityID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Trinity Assessment job: ${assessTrinityID}"

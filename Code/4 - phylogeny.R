@@ -243,3 +243,5 @@ cafe_tree_plot <- the_tree %>%
 cafe_tree_plot <- revts(cafe_tree_plot)
 cafe_tree_plot
 ggsave('../Results/cafe_time_tree.png', plot = cafe_tree_plot, height = 7, width = 10)
+
+ggsave('../Results/cafe_time_tree.svg', plot = cafe_tree_plot, height = 7, width = 10)

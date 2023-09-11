@@ -1,0 +1,45 @@
+Orthogroup,swissprot_1,swissprot_2,eggnog_1,eggnog_2,pfam_1,pfam_2,kegg_1
+N0.HOG0000141,Retrovirus-related Pol polyprotein from tranoson 17.6 OS=Drosophila melanogaster OX=7227 GN=pol PE=4 SV=1 (sp|P04323|POL3_DROME),Retrovirus-related Pol polyprotein from tranoson opus OS=Drosophila melanogaster OX=7227 GN=pol PE=4 SV=1 (sp|Q8I7P9|POL5_DROME),NA,NA,RNase H-like domain found in reverse transcriptase (PF17919),NA,NA
+N0.HOG0001350,Probable RNA-directed DNA polymerase from tranoson X-element OS=Drosophila melanogaster OX=7227 GN=X-element\ORF2 PE=3 SV=1 (sp|Q9NBX4|RTXE_DROME),NA,NA,NA,Reverse transcriptase (RNA-dependent DNA polymerase) (PF00078),NA,NA
+N0.HOG0002273,ATP-dependent DNA helicase RecQ OS=Salmonella typhimurium (strain LT2 / SGSC1412 / ATCC 700720) OX=99287 GN=recQ PE=3 SV=3 (sp|P40724|RECQ_SALTY),ATP-dependent DNA helicase Q-like 3 OS=Arabidopsis thaliana OX=3702 GN=RECQL3 PE=1 SV=1 (sp|Q9FT72|RQL3_ARATH),DNA helicase (OSI_15961),ATP-dependent DNA helicase RecQ (RECQ),NA,NA,ATP-dependent DNA helicase RecQ [EC:5.6.2.4] (ko:K03654)
+N0.HOG0004710,Tranosable element Tcb2 tranosase OS=Caenorhabditis briggsae OX=6238 PE=3 SV=1 (sp|Q04202|TCB2_CAEBR),NA,NA,NA,DDE superfamily endonuclease (PF13358),NA,NA
+N0.HOG0023592,Pro-Pol polyprotein OS=Feline foamy virus OX=53182 GN=pol PE=3 SV=1 (sp|O93209|POL_FFV),NA,NA,NA,Reverse transcriptase (RNA-dependent DNA polymerase) (PF00078),Phage integrase family (PF00589),putative transposase (ko:K07497)
+N0.HOG0023598,Probable RNA-directed DNA polymerase from tranoson BS OS=Drosophila melanogaster OX=7227 GN=RTase PE=2 SV=1 (sp|Q95SX7|RTBS_DROME),NA,NA,NA,Reverse transcriptase (RNA-dependent DNA polymerase) (PF00078),NA,NA
+N0.HOG0024617,Uncharacterized protein K02A2.6 OS=Caenorhabditis elegans OX=6239 GN=K02A2.6 PE=4 SV=1 (sp|Q09575|YRD6_CAEEL),NA,NA,NA,Integrase zinc binding domain (PF17921),NA,NA
+N0.HOG0024636,Retrovirus-related Pol polyprotein from tranoson 412 OS=Drosophila melanogaster OX=7227 GN=POL PE=4 SV=1 (sp|P10394|POL4_DROME),Enzymatic polyprotein OS=Cauliflower mosaic virus (strain CM-1841) OX=10644 GN=ORF V PE=3 SV=1 (sp|P03555|POL_CAMVC),NA,NA,RNase H-like domain found in reverse transcriptase (PF17919),Reverse transcriptase (RNA-dependent DNA polymerase) (PF00078),putative transposase (ko:K07497)
+N0.HOG0024680,Gag-Pol polyprotein OS=Walleye dermal sarcoma virus OX=39720 GN=gag-pol PE=1 SV=2 (sp|O92815|POL_WDSV),NA,NA,NA,Reverse transcriptase (RNA-dependent DNA polymerase) (PF00078),NA,NA
+N0.HOG0026119,Retrovirus-related Pol polyprotein from tranoson 297 OS=Drosophila melanogaster OX=7227 GN=pol PE=4 SV=1 (sp|P20825|POL2_DROME),Retrovirus-related Pol polyprotein from tranoson 17.6 OS=Drosophila melanogaster OX=7227 GN=pol PE=4 SV=1 (sp|P04323|POL3_DROME),NA,NA,RNase H-like domain found in reverse transcriptase (PF17917),RNase H-like domain found in reverse transcriptase (PF17919),NA
+N0.HOG0026150,Integrase/recombinase xerD homolog OS=Selenomonas ruminantium OX=971 GN=xerD PE=3 SV=1 (sp|O50655|XERD_SELRU),NA,NA,NA,NA,NA,NA
+N0.HOG0028610,E3 UFM1-protein ligase 1 homolog OS=Nematostella vectensis OX=45351 GN=v1g184952 PE=3 SV=1 (sp|A7S2N8|UFL1_NEMVE),NA,ligase 1 (UFL1),NA,E3 UFM1-protein ligase 1 (PF09743),NA,NA
+N0.HOG0028623,Tetratricopeptide repeat protein 28 OS=Homo sapiens OX=9606 GN=TTC28 PE=1 SV=4 (sp|Q96AY4|TTC28_HUMAN),NA,NA,NA,Tetratricopeptide repeat (PF13424),NA,NA
+N0.HOG0028759,Intraflagellar tranort protein 20 homolog B OS=Xenopus laevis OX=8355 GN=ift20-b PE=2 SV=1 (sp|Q640Z7|IF20B_XENLA),Intraflagellar tranort protein 20 homolog A OS=Xenopus laevis OX=8355 GN=ift20-a PE=2 SV=1 (sp|Q90WZ0|IF20A_XENLA),intraflagellar transport 20 homolog (Chlamydomonas) (IFT20),NA,"Intraflagellar transport complex B, subunit 20 (PF14931)",NA,NA
+N0.HOG0028784,Dendrite extension defective protein 1 OS=Caenorhabditis elegans OX=6239 GN=dex-1 PE=2 SV=3 (sp|P41950|DEX1_CAEEL),Adhesion G protein-coupled receptor E2 OS=Macaca mulatta OX=9544 GN=ADGRE2 PE=2 SV=1 (sp|Q2Q426|AGRE2_MACMU),NEL-like 1 (Chicken) (NELL1),NA,Calcium-binding EGF domain (PF07645),NA,NA
+N0.HOG0028807,Pyroglutamylated RF-amide peptide receptor OS=Rattus norvegicus OX=10116 GN=Qrfpr PE=2 SV=1 (sp|P83858|QRFPR_RAT),NA,pyroglutamylated RFamide peptide receptor (QRFPR),NA,7 transmembrane receptor (rhodopsin family) (PF00001),NA,pyroglutamylated RFamide peptide receptor (ko:K08378)
+N0.HOG0000972,NA,NA,nucleolar protein 12 (NOL12),NA,NA,NA,NA
+N0.HOG0000988,NA,NA,trafficking protein particle complex 11 (TRAPPC11),NA,NA,NA,NA
+N0.HOG0001259,NA,NA,"Catalyzes the addition of fucose in alpha 1-6 linkage to the first GlcNAc residue, next to the peptide chains in N-glycans (By similarity) (FUT8)",NA,NA,NA,NA
+N0.HOG0028647,NA,NA,"nephrosis 1, congenital, Finnish type (nephrin) (NPHS1)",NA,NA,NA,NA
+N0.HOG0028665,NA,NA,Involved in vacuolar transport and vacuole pH homeostasis. Also required for cytokinesis (By similarity) (CLN3),NA,CLN3 protein (PF02487),NA,NA
+N0.HOG0028675,NA,NA,NADPH dependent diflavin oxidoreductase 1 (NDOR1),NA,DDE superfamily endonuclease (PF13359),NA,NA
+N0.HOG0028747,NA,NA,fibronectin type III and ankyrin repeat domains 1 (FANK1),NA,NA,NA,NA
+N0.HOG0028763,NA,NA,Immunity-related GTPase family (IRGC),NA,Interferon-inducible GTPase (IIGP) (PF05049),NA,NA
+N0.HOG0000258,NA,NA,NA,NA,Integrase core domain (PF00665),NA,NA
+N0.HOG0001125,NA,NA,NA,NA,THAP domain (PF05485),NA,NA
+N0.HOG0002081,NA,NA,NA,NA,YqaJ-like viral recombinase domain (PF09588),NA,NA
+N0.HOG0002090,NA,NA,NA,NA,YqaJ-like viral recombinase domain (PF09588),NA,NA
+N0.HOG0004709,NA,NA,NA,NA,DDE superfamily endonuclease (PF13358),NA,NA
+N0.HOG0021344,NA,NA,NA,NA,zinc-binding in reverse transcriptase (PF13966),NA,NA
+N0.HOG0022871,NA,NA,NA,NA,Phospholipase A2-like domain (PF08398),NA,NA
+N0.HOG0026051,NA,NA,NA,NA,GIY-YIG catalytic domain (PF01541),NA,NA
+N0.HOG0026073,NA,NA,NA,NA,THAP domain (PF05485),NA,NA
+N0.HOG0026156,NA,NA,NA,NA,Transposase IS4 (PF13843),NA,NA
+N0.HOG0028529,NA,NA,NA,NA,DDE superfamily endonuclease (PF13359),NA,NA
+N0.HOG0028539,NA,NA,NA,NA,DMRTA motif (PF03474),NA,NA
+N0.HOG0028545,NA,NA,NA,NA,P2X purinoreceptor 7 intracellular domain (PF20478),NA,NA
+N0.HOG0028559,NA,NA,NA,NA,THAP domain (PF05485),NA,NA
+N0.HOG0028596,NA,NA,NA,NA,Phage integrase family (PF00589),NA,NA
+N0.HOG0028607,NA,NA,NA,NA,Reverse transcriptase (RNA-dependent DNA polymerase) (PF00078),NA,NA
+N0.HOG0028632,NA,NA,NA,NA,Reverse transcriptase (RNA-dependent DNA polymerase) (PF00078),NA,NA
+N0.HOG0028667,NA,NA,NA,NA,THAP domain (PF05485),NA,NA
+N0.HOG0028773,NA,NA,NA,NA,Integrase zinc binding domain (PF17921),NA,NA
+N0.HOG0028790,NA,NA,NA,NA,Reverse transcriptase (RNA-dependent DNA polymerase) (PF00078),NA,NA

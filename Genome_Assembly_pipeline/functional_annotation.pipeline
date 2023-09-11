@@ -1,0 +1,107 @@
+#!/bin/bash
+
+#SBATCH --job-name=fa_pipeline
+#SBATCH --partition=short
+#SBATCH --time=1-00:00:00
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
+
+#functional annotation pipeline
+# https://www.bioinformatics.uni-muenster.de/publication_data/P.californicus_annotation/functional_prediction.hbi
+
+#inputs: maker final gff, transcript fasta, protein fasta
+#outdir=/scratch/j.selwyn/tmp2
+#genome=/work/vollmer/k2_nanopore_genome/k2_flyeHQ_polish.fa
+#maker_gff=/scratch/j.selwyn/genome_annotation/flyeHQ_8-September-2022/maker_r1/r1.gff
+#maker_transcripts=/scratch/j.selwyn/genome_annotation/flyeHQ_8-September-2022/maker_r1/r1.all.maker.transcripts.fasta
+#maker_proteins=/scratch/j.selwyn/genome_annotation/flyeHQ_8-September-2022/maker_r1/r1.all.maker.proteins.fasta
+
+outdir=${1}
+genome=${2}
+maker_gff=${3}
+maker_transcripts=${4}
+maker_proteins=${5}
+
+scriptDir=/work/vollmer/software/jds_scripts
+
+mkdir -p ${outdir}/slurm
+cd ${outdir}
+base_name=$(echo ${maker_gff##*/} | sed -e "s/\.gff$//")
+
+#step 1: rename gene names
+JOBID=$(sbatch \
+  --job-name=beautifyMaker \
+  --output=${outdir}/slurm/beautifyMaker_%j.output \
+  ${scriptDir}/beautifyMaker.slurm \
+    ${outdir} \
+    ${maker_gff} \
+    ${maker_transcripts} \
+    ${maker_proteins} \
+    ${genome})
+beautifyMakerID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Maker Beautification Array: ${beautifyMakerID}"
+
+#step 2: Blast against uniprot - array
+JOBID=$(sbatch \
+  --job-name=BLAST \
+  --dependency=afterany:${beautifyMakerID} \
+  --output=${outdir}/slurm/blast_swissprot_%A_%a.output \
+  --array=0-$((100-1))%5 \
+  ${scriptDir}/functionalAnnotateBLAST.slurm \
+    ${outdir} \
+    ${outdir}/${base_name}.all.maker.proteins.fasta \
+    100)
+faBLAST=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted BLAST Functional Annotation Job Array: ${faBLAST}"
+
+#step 3: KOFAMscan - array
+JOBID=$(sbatch \
+  --job-name=KOFAM \
+  --dependency=afterany:${beautifyMakerID} \
+  --output=${outdir}/slurm/kofamscan_%A_%a.output \
+  --array=0-$((100-1))%5 \
+  ${scriptDir}/functionalAnnotateKEGG.slurm \
+    ${outdir} \
+    ${outdir}/${base_name}.all.maker.proteins.fasta \
+    100)
+faKOFAM=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted KOFAMscan Functional Annotation Job Array: ${faKOFAM}"
+
+#step 4: InterProScan - array
+JOBID=$(sbatch \
+  --job-name=interPro \
+  --dependency=afterany:${beautifyMakerID} \
+  --output=${outdir}/slurm/interproscan_%A_%a.output \
+  --array=0-$((100-1))%25 \
+  ${scriptDir}/functionalAnnotateInterProt.slurm \
+    ${outdir} \
+    ${outdir}/${base_name}.all.maker.proteins.fasta \
+    100)
+faInterProt=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted InterProt Functional Annotation Job Array: ${faInterProt}"
+
+#step 5: EnTAP - array
+JOBID=$(sbatch \
+  --job-name=EnTAP \
+  --dependency=afterany:${faInterProt}:${faBLAST}:${faKOFAM} \
+  --output=${outdir}/slurm/entap_%A_%a.output \
+  --array=0-$((100-1))%40 \
+  ${scriptDir}/functionalAnnotateENTAP.slurm \
+    ${outdir} \
+    ${outdir}/${base_name}.all.maker.proteins.fasta \
+    100)
+faENTAP=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted EnTAP Functional Annotation Job Array: ${faENTAP}"
+
+#step 6: Gather interprot & blast & kofamscan array results & Put onto gff and fasta results
+JOBID=$(sbatch \
+  --job-name=gatherInterPro \
+  --dependency=afterany:${faENTAP} \
+  --output=${outdir}/slurm/gatherFA_%j.output \
+  ${scriptDir}/finalizeFunctionalAnnotations.slurm \
+    ${outdir} \
+    ${genome} \
+    ${base_name})
+gatherFA=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Functional Annotation Gather Job: ${gatherFA}"

@@ -1,0 +1,228 @@
+#!/bin/bash
+
+#SBATCH --job-name=maker_pipeline
+#SBATCH --partition=short
+#SBATCH --time=1-00:00:00
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
+
+#outdir=/scratch/j.selwyn/tmp
+#genome=/work/vollmer/k2_nanopore_genome/k2_flyeHQ_polish.fa
+#transcriptome=/scratch/j.selwyn/genome_annotation/flyeHQ_18-July-2022/trinity/k2_flyeHQ_polish_trinity-gg.fasta
+#protein_ref=/work/vollmer/Databases/Protein_DB/aDigitifera_uniprot_canonical_and_isoform_all-2022.08.09.fasta
+#minLength_genome=1000000
+#minLength_transcriptome=10000
+#max_rounds=4
+#max_array_size=30
+#maker_round=1
+
+#ingest inputs
+echo $@
+
+outdir=${1}
+genome=${2}
+transcriptome=${3}
+protein_ref=${4}
+minLength_genome=${5}
+minLength_transcriptome=${6}
+max_rounds=${7}
+max_array_size=${8}
+maker_round=${9:-1}
+
+scriptDir=/work/vollmer/software/jds_scripts
+
+genome_name=$(echo ${genome##*/} | sed -e "s/\.f.*a$//")
+transcriptome_name=$(echo ${transcriptome##*/} | sed -e "s/\.f.*a$//")
+
+mkdir -p ${outdir}/slurm
+
+if [ ${maker_round} == '1' ]
+then
+  #Get Initial Data
+  JOBID=$(sbatch \
+    --output=${outdir}/slurm/initializeMaker_%j.output \
+    ${scriptDir}/initializeMaker.slurm \
+      ${outdir} \
+      ${genome} \
+      ${transcriptome} \
+      ${minLength_genome} \
+      ${minLength_transcriptome})
+  initialID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+  echo "Submitted Maker Initialization job: ${initialID}"
+
+  #Repeat modeler
+  JOBID=$(sbatch \
+    --dependency=afterany:${initialID} \
+    --output=${outdir}/slurm/repeatModel_%j.output \
+    ${scriptDir}/repeatModel.slurm \
+      ${outdir} \
+      ${outdir}/${genome_name}_${minLength_genome}.fa)
+  repModelID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+  echo "Submitted Repeat Modeler job: ${repModelID}"
+
+  #Repeat Masking
+  JOBID=$(sbatch \
+    --dependency=afterany:${repModelID} \
+    --output=${outdir}/slurm/repeatMasker_%j.output \
+    ${scriptDir}/repeatMasker.slurm \
+      ${outdir} \
+      ${outdir}/${genome_name}_${minLength_genome}.fa \
+      "${outdir}/${genome_name}_${minLength_genome}-families.fa")
+  repMaskID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+  echo "Submitted Repeat Masker job: ${repMaskID}"
+
+  #Run Maker Array
+  JOBID=$(sbatch \
+    --dependency=afterany:${repMaskID} \
+    --output=${outdir}/slurm/maker_r${maker_round}_%A_%a.output \
+    --array=0-$((${max_array_size}-1))%30 \
+    ${scriptDir}/runMaker.slurm \
+      ${outdir}/maker_r${maker_round} \
+      ${outdir}/${genome_name}_${minLength_genome}.fa \
+      ${outdir}/${transcriptome_name}_${minLength_transcriptome}.fa \
+      ${protein_ref} \
+      ${max_array_size} \
+      ${maker_round})
+  makerID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+  echo "Submitted Maker Round ${maker_round} jobs: ${makerID}"
+else
+  #Run Maker Array
+  previous_round=$((maker_round-1))
+  JOBID=$(sbatch \
+    --output=${outdir}/slurm/maker_r${maker_round}_%A_%a.output \
+    --array=0-$((${max_array_size}-1))%30 \
+    ${scriptDir}/runMaker.slurm \
+      ${outdir}/maker_r${maker_round} \
+      ${outdir}/${genome_name}_${minLength_genome}.fa \
+      ${outdir}/${transcriptome_name}_${minLength_transcriptome}.fa \
+      ${protein_ref} \
+      ${max_array_size} \
+      ${maker_round} \
+      ${outdir}/maker_r${previous_round}/r${previous_round}.gff \
+      ${outdir}/maker_r${previous_round}/snap_modelTrain.hmm \
+      ${outdir}/maker_r${previous_round}/gmhmm.mod)
+  makerID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+  echo "Submitted Maker Round ${maker_round} jobs: ${makerID}"
+fi
+
+#Gather Maker Results
+JOBID=$(sbatch \
+  --dependency=afterany:${makerID} \
+  --output=${outdir}/slurm/finalizeMaker_r${maker_round}_%j.output \
+  ${scriptDir}/finalizeMaker.slurm \
+    ${outdir}/maker_r${maker_round} \
+    ${maker_round})
+finalID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Finalize Maker job: ${finalID}"
+
+#Train SNAP on Maker Results
+JOBID=$(sbatch \
+  --dependency=afterany:${finalID} \
+  --output=${outdir}/slurm/snapTrain_r${maker_round}_%j.output \
+  ${scriptDir}/trainSNAP.slurm \
+    ${outdir}/maker_r${maker_round} \
+    ${outdir}/maker_r${maker_round}/r${maker_round}.gff)
+snapID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted SNAP R${maker_round} jobs: ${snapID}"
+
+#Train AUGUSTUS on Maker Results - loop through 3 times to get 6 full training rounds (default is 5 rounds but that takes too long)
+JOBID=$(sbatch \
+  --dependency=afterany:${snapID} \
+  --output=${outdir}/slurm/augustusTrain_r${maker_round}_%j.output \
+  ${scriptDir}/trainAugustus.slurm \
+    ${outdir}/maker_r${maker_round})
+augustusID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Augustus 1 R${maker_round} jobs: ${augustusID}"
+
+for i in {2..5}
+do
+  JOBID=$(sbatch \
+    --dependency=afterany:${augustusID} \
+    --output=${outdir}/slurm/augustusTrain_r${maker_round}_${i}_%j.output \
+    ${scriptDir}/trainAugustus.slurm \
+      ${outdir}/maker_r${maker_round})
+  augustusID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+  echo "Submitted Augustus ${i} R${maker_round} jobs: ${augustusID}"
+done
+
+#Train GeneMark on Maker Results
+JOBID=$(sbatch \
+  --dependency=afterany:${finalID} \
+  --output=${outdir}/slurm/geneMarkTrain_r${maker_round}_%j.output \
+  ${scriptDir}/trainGeneMark.slurm \
+    ${outdir}/maker_r${maker_round} \
+    ${outdir}/${genome_name}_${minLength_genome}.fa)
+geneMarkID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted GeneMark R${maker_round} jobs: ${geneMarkID}"
+
+#Wrap up and get some diagnostics
+JOBID=$(sbatch \
+  --dependency=afterany:${finalID} \
+  --output=${outdir}/slurm/diagnoseMaker_r${maker_round}_%j.output \
+  ${scriptDir}/diagnoseMaker.slurm \
+    ${outdir}/maker_r${maker_round}/r${maker_round}.gff \
+    ${outdir}/maker_r${maker_round}/r${maker_round}.all.maker.transcripts.fasta)
+diagnoseID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Diagnostics R${maker_round} jobs: ${diagnoseID}"
+
+#Functional Annotation
+JOBID=$(sbatch \
+  --job-name=FA_pipeline \
+  --dependency=afterany:${snapID}:${augustusID}:${geneMarkID}:${diagnoseID} \
+  --output=${outdir}/slurm/faPipeline_%j.output \
+  ${scriptDir}/functional_annotation.pipeline \
+    ${outdir}/maker_r${maker_round}/functional_annotation \
+    ${genome} \
+    ${outdir}/maker_r${maker_round}/r${maker_round}.gff \
+    ${outdir}/maker_r${maker_round}/r${maker_round}.all.maker.transcripts.fasta \
+    ${outdir}/maker_r${maker_round}/r${maker_round}.all.maker.proteins.fasta)
+faID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Functional Annotation Pipeline: ${faID}"
+
+#Recursively restart this script unless this was the max rounds
+if [[ ${maker_round} -lt ${max_rounds} ]]
+then
+  JOBID=$(sbatch \
+    --dependency=afterany:${snapID}:${augustusID}:${geneMarkID}:${diagnoseID} \
+    --output=${outdir}/slurm/spawn_maker_round_%j.output \
+    ${scriptDir}/maker.pipeline \
+      ${outdir} \
+      ${genome} \
+      ${transcriptome} \
+      ${protein_ref} \
+      ${minLength_genome} \
+      ${minLength_transcriptome} \
+      ${max_rounds} \
+      ${max_array_size} \
+      $((maker_round+1)))
+  nextRoundID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+  echo "Submitted Next Round jobs: ${nextRoundID}"
+fi
+
+#If rounds = max rounds then do some final diagnostics/merge diagnostics & Run functional annotation
+if [[ ${maker_round} == ${max_rounds} ]]
+then
+  JOBID=$(sbatch \
+    --job-name=MakerFinale \
+    --dependency=afterany:${snapID}:${augustusID}:${geneMarkID}:${diagnoseID} \
+    --output=${outdir}/slurm/final_diagnostics_%j.output \
+    ${scriptDir}/runRscript.slurm \
+      ${scriptDir}/r_utils/maker_final_summary.R \
+        ${outdir})
+  finalDiagnose=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+  echo "Submitted Final Diagnostic: ${finalDiagnose}"
+
+#  JOBID=$(sbatch \
+#    --job-name=FA_pipeline \
+#    --dependency=afterany:${snapID}:${augustusID}:${geneMarkID}:${diagnoseID} \
+#    --output=${outdir}/slurm/faPipeline_%j.output \
+#    ${scriptDir}/functional_annotation.pipeline \
+#      ${outdir}/functional_annotation \
+#      ${genome} \
+#      ${outdir}/maker_r${maker_round}/r${maker_round}.gff \
+#      ${outdir}/maker_r${maker_round}/r${maker_round}.all.maker.transcripts.fasta \
+#      ${outdir}/maker_r${maker_round}/r${maker_round}.all.maker.proteins.fasta)
+#  faID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+#  echo "Submitted Functional Annotation Pipeline: ${faID}"
+fi

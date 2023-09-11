@@ -1,0 +1,443 @@
+#!/bin/bash
+
+#SBATCH --job-name=genome_assembly_pipeline
+#SBATCH --partition=short
+#SBATCH --time=1-00:00:00
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
+
+
+#outdir=/scratch/j.selwyn/tmp
+#genome_name=k2HybridAssembly
+#longread_directory=/work/vollmer/Nanopore_Data
+#shortreads=/work/vollmer/Discovar/*fastq
+
+outdir=${1}
+genome_name=${2}
+longread_directory=${3}
+shortreads=${4}
+
+scriptDir=/work/vollmer/software/jds_scripts
+
+mkdir -p ${outdir}/slurm ${outdir}/raw_shortreads
+
+## Setup for Long Read Arrays
+all_longread_dirs=( $(ls -d ${longread_directory}/*) )
+number_of_longreadDirs=${#all_longread_dirs[@]}
+longread_unmerged_out=$(printf "${outdir}/raw_longreads/%s.fastq.gz\n" ${all_longread_dirs[@]##*/})
+
+## Setup for Short Read Arrays
+ln -s ${shortreads} ${outdir}/raw_shortreads/
+shortreads=${outdir}/raw_shortreads/*fastq
+
+tmp=( ${shortreads} )
+indir=${tmp%/*}
+full_file=( $(ls ${shortreads} | sed -e 's!.*/!!' | sort -u) )
+sample_names=( $(ls ${shortreads} | sed -e 's!.*/!!' | sed -e 's/[\._][rR][12]\.*\..*//' | sort -u) )
+extensions=( $(ls ${shortreads} | sed -e 's!.*/!!' | sed -e 's/^.*\([\._][rR][12]\)/\1/g' | sort -u) )
+number_of_individuals=${#sample_names[@]}
+number_of_extensions=${#extensions[@]}
+number_of_samples=$((number_of_extensions * number_of_individuals))
+
+#Sort out future filenames
+fastq_files_fastp=$(ls ${shortreads} | sed -e 's/raw_shortreads/fastp/g' | sed -e 's/\([\._][rR][12]\.*\..*\)/-fp\1/g')
+fastq_files_fastp_fqscrn=$(ls ${shortreads} | sed -e 's/raw_shortreads/fqscrn/g' | sed -e 's/\([\._][rR][12]\.*\..*\)/-fp-fqscrn\1/g')
+fastq_files_fastp_fqscrn_repair=$(ls ${shortreads} | sed -e 's/raw_shortreads/repair/g' | sed -e 's/\([\._][rR][12]\.*\..*\)/-fp-fqscrn-repr\1/g')
+fastq_files_fastp_fqscrn_repair_normalize=$(ls ${shortreads} | sed -e 's/raw_shortreads/normalize/g' | sed -e 's/\([\._][rR][12]\.*\..*\)/-fp-fqscrn-repr-norm\1/g')
+
+fastq_files_fastp_fqscrn_repair_array=( ${fastq_files_fastp_fqscrn_repair} )
+
+#Make Genome Names
+mitogenome_assembly=${outdir}/mitogenome/${sample_names[0]}-fp-fqscrn-repr/mt_assembly/${sample_names[0]}-fp-fqscrn-repr.megahit.result/${sample_names[0]}-fp-fqscrn-repr.megahit.mitogenome.fa
+
+## Base Calling #14/100
+JOBID=$(sbatch \
+    --output=${outdir}/slurm/guppyBasecall_%A_%a.output \
+    --array=0-$((${number_of_longreadDirs}-1))%30 \
+    --cpus-per-task=14 \
+    --mem=25 \
+    ${scriptDir}/basecallGuppy.slurm \
+      ${outdir}/raw_longreads \
+      ${all_longread_dirs[@]})
+guppyID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Guppy BaseCalling job: ${guppyID}" #32156113
+
+JOBID=$(sbatch \
+    --output=${outdir}/slurm/mergeGuppy_%j.output \
+    --dependency=afterany:${guppyID} \
+    ${scriptDir}/mergeFiles.slurm \
+      ${outdir}/raw_longreads/${genome_name}_nanopore_input.fastq.gz \
+      ${longread_unmerged_out})
+guppyMergeID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Guppy Merge job: ${guppyMergeID}" #32156114
+
+#Clean Nanopore reads - not used by Flye but useful for all other applications of long reads
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/cleanNano_%j.output \
+  --dependency=afterany:${guppyMergeID} \
+  ${scriptDir}/cleanNanopore.slurm \
+  ${outdir}/raw_longreads/${genome_name}_nanopore_input.fastq.gz \
+  ${outdir}/clean_nano)
+porechopID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted NanoPore cleaning job: ${porechopID}" #32207446
+
+## Preprocess Short Reads
+#Run FastP
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/fastp_%A_%a.output \
+  --array=0-$((${number_of_individuals}-1))%30 \
+  ${scriptDir}/preProcessFastp.slurm \
+    ${outdir}/fastp \
+    PE \
+    140 \
+    ${shortreads})
+fastpID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Fastp job: ${fastpID}" #32103694
+
+JOBID=$(sbatch \
+  --dependency=afterany:${fastpID} \
+  --output=${outdir}/slurm/fqscrn_%A_%a.output \
+  --array=0-$((${number_of_samples}-1))%30 \
+  ${scriptDir}/preProcessFQScreen.slurm \
+    ${outdir}/fqscrn \
+    ${fastq_files_fastp})
+fqscrnID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted FQScreen job: ${fqscrnID}" #32113725
+
+JOBID=$(sbatch \
+  --dependency=afterany:${fqscrnID} \
+  --output=${outdir}/slurm/repair_%A_%a.output \
+  --array=0-$((${number_of_individuals}-1))%30 \
+  ${scriptDir}/preProcessRepair.slurm \
+    ${outdir}/repair \
+    PE \
+    ${fastq_files_fastp_fqscrn})
+repairID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Repair job: ${repairID}" #32116077
+
+## Estimate Genome Size
+JOBID=$(sbatch \
+  --dependency=afterany:${repairID} \
+  --output=${outdir}/slurm/kmerGenomeSize_%A_%a.output \
+  --array=0-$((${number_of_individuals}-1))%30 \
+  ${scriptDir}/runJellyfish.slurm \
+  ${outdir}/jellyfish \
+  ${fastq_files_fastp_fqscrn_repair})
+genomeSizeID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Genome Size Estimation job: ${genomeSizeID}" #32289202
+
+## Long Read Assembly with Flye_HQ
+JOBID=$(sbatch \
+    --dependency=afterany:${guppyMergeID} \
+    --output=${outdir}/slurm/flyeHQ_assembly_%j.output \
+    ${scriptDir}/assembleFlye.slurm \
+      ${outdir}/raw_longreads/${genome_name}_nanopore_input.fastq.gz \
+      ${outdir}/flye \
+      400m \
+      ${genome_name}_longreads)
+flyeID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted FLYE LongRead Assembly job: ${flyeID}" #32156825
+
+## Mitochondrial Genome Assembly - short reads
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/mitoFind_%A_%a.output \
+  --dependency=afterany:${repairID} \
+  --array=0-$((${number_of_individuals}-1))%30 \
+  ${scriptDir}/mitoFind.slurm \
+    ${outdir}/mitogenome \
+    ${fastq_files_fastp_fqscrn_repair})
+mitoID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Mitochondrial Finding & Annotation job: ${mitoID}"
+
+## Collapse Haplotigs - long read assembly
+#https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-021-04118-3
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/purgeDuplicates_%j.output \
+  --dependency=afterany:${flyeID}:${porechopID} \
+  ${scriptDir}/purgeDuplicates.slurm \
+    ${outdir}/purge_dupes \
+    ${outdir}/flye/${genome_name}_longreads_flyeHQ.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nA.fastq.gz)
+haplotigID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Duplicate Removal job: ${haplotigID}" #32208282
+
+## Polish Flye with Long Reads
+JOBID=$(sbatch \
+  --dependency=afterany:${haplotigID} \
+  --output=${outdir}/slurm/longreadPolish_longAssembly_1_%j.output \
+  ${scriptDir}/polishNanopore.slurm \
+    ${outdir}/purge_dupes/${genome_name}_longreads_flyeHQ_purgeDup.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nP.fastq.gz \
+    ${outdir}/longPolish/longread/1)
+longPolishLongID1=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Long Read Polish (long assembly) 1 jobs: ${longPolishLongID1}" #32208284
+
+JOBID=$(sbatch \
+  --dependency=afterany:${longPolishLongID1} \
+  --output=${outdir}/slurm/longreadPolish_longAssembly_2_%j.output \
+  ${scriptDir}/polishNanopore.slurm \
+    ${outdir}/longPolish/longread/1/${genome_name}_longreads_flyeHQ_purgeDup_racon.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nP.fastq.gz \
+    ${outdir}/longPolish/longread/2)
+longPolishLongID2=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Long Read Polish (long assembly) 2 jobs: ${longPolishLongID2}" #32208285
+
+#### Medaka after 2 racons
+JOBID=$(sbatch \
+  --dependency=afterany:${longPolishLongID2} \
+  --output=${outdir}/slurm/longreadPolish_medaka_%j.output \
+  ${scriptDir}/polishMedaka.slurm \
+    ${outdir}/longPolish/longread/2/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nP.fastq.gz \
+    ${outdir}/longPolish/longread/medaka)
+longPolishLongIDmedaka=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Long Read Medaka Polish (long assembly) jobs: ${longPolishLongIDmedaka}" #32208287
+
+## Polish Flye with short reads
+#### Map Short Reads to Genome
+JOBID=$(sbatch \
+  --dependency=afterany:${longPolishLongIDmedaka} \
+  --output=${outdir}/slurm/shortreadMap_forPilon_1_%j.output \
+  ${scriptDir}/mapShortReads.slurm \
+    ${outdir}/longPolish/longread/medaka/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/longread/1)
+shortMapID1=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Short Read Mapping (long assembly) 1 jobs: ${shortMapID1}" #32267363
+
+#### Array for Polishing
+JOBID=$(sbatch \
+  --dependency=afterany:${shortMapID1} \
+  --array=0-$((100-1))%30 \
+  --output=${outdir}/slurm/shortreadPolish_longAssembly_1_%A_%a.output \
+  ${scriptDir}/polishIllumina.slurm \
+    ${outdir}/longPolish/longread/medaka/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/longread/1)
+shortPolishLongID1=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Short Read Polish (long assembly) 1 jobs: ${shortPolishLongID1}" #32268845
+
+#### Join Polished Assembly
+JOBID=$(sbatch \
+  --dependency=afterany:${shortPolishLongID1} \
+  --output=${outdir}/slurm/gatherPilon_1_%j.output \
+  ${scriptDir}/gatherPilon.slurm \
+    ${outdir}/longPolish/longread/medaka/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/longread/1)
+pilonGatherID1=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Pilon Collection 1 jobs: ${pilonGatherID1}" #32269068
+
+## Second Round Pilon Polish
+#### Map Short Reads to Genome
+JOBID=$(sbatch \
+  --dependency=afterany:${pilonGatherID1} \
+  --output=${outdir}/slurm/shortreadMap_forPilon_2_%j.output \
+  ${scriptDir}/mapShortReads.slurm \
+    ${outdir}/shortPolish/longread/1/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/longread/2)
+shortMapID2=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Short Read Mapping (long assembly) 2 jobs: ${shortMapID2}" #32269071
+
+#### Array for Polishing
+JOBID=$(sbatch \
+  --dependency=afterany:${shortMapID2} \
+  --array=0-$((100-1))%30 \
+  --output=${outdir}/slurm/shortreadPolish_longAssembly_2_%A_%a.output \
+  ${scriptDir}/polishIllumina.slurm \
+    ${outdir}/shortPolish/longread/1/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/longread/2)
+shortPolishLongID2=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Short Read Polish (long assembly) 2 jobs: ${shortPolishLongID2}" #32269073
+
+#### Join Polished Assembly
+JOBID=$(sbatch \
+  --dependency=afterany:${shortPolishLongID2} \
+  --output=${outdir}/slurm/gatherPilon_2_%j.output \
+  ${scriptDir}/gatherPilon.slurm \
+    ${outdir}/shortPolish/longread/1/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/longread/2)
+pilonGatherID2=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Pilon Collection 2 jobs: ${pilonGatherID2}" #32269074
+
+## Break Misassembly - Short Reads
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/misassemblyCorrection_%j.output \
+  --dependency=afterany:${shortPolishLongID2} \
+  ${scriptDir}/runMEC.slurm \
+    ${outdir}/mec \
+    ${outdir}/shortPolish/longread/2/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon.fasta \
+    ${fastq_files_fastp_fqscrn_repair})
+mecID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Misassembly Error Correction job: ${mecID}" #32269107
+
+## Remove mtGenome
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/mitoRemove_%j.output \
+  --dependency=afterany:${mitoID}:${mecID} \
+  ${scriptDir}/genomeRemoveMito.slurm \
+    ${outdir}/mec/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec.fasta \
+    ${mitogenome_assembly})
+mitoRemovalID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Mitochondrial Removal job: ${mitoRemovalID}" #32269109
+
+## Remove Contaminants
+#### Set up blobtools
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/blobStart_%j.output \
+  --dependency=afterany:${mitoRemovalID} \
+  ${scriptDir}/blobStart.slurm \
+    ${outdir}/blobtools \
+    ${outdir}/mec/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove.fasta)
+blobCreateID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Blob Tool Creation job: ${blobCreateID}" #32269111
+
+#### Map for Blobtools
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/blobMap_%j.output \
+  --dependency=afterany:${blobCreateID} \
+  ${scriptDir}/blobMap.slurm \
+    ${outdir}/blobtools \
+    ${outdir}/mec/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nP.fastq.gz \
+    ${fastq_files_fastp_fqscrn_repair})
+blobMapID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Blob Mapping job: ${blobMapID}" #32269112
+
+#### Blast for Blobtools
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/blobBLAST_%j.output \
+  --dependency=afterany:${blobCreateID} \
+  ${scriptDir}/blobBLAST.slurm \
+    ${outdir}/blobtools \
+    ${outdir}/mec/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove.fasta)
+blobBLASTID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Blob BLAST job: ${blobBLASTID}" #32269113
+
+#### Filter Blobtools
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/blobFilter_%j.output \
+  --dependency=afterany:${blobBLASTID}:${blobMapID} \
+  ${scriptDir}/blobFilter.slurm \
+    ${outdir}/blobtools \
+    ${outdir}/mec/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove.fasta \
+    100 \
+    10)
+contamID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Contaminant Removal job: ${contamID}" #32281843
+
+## Scaffold
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/fullScaffold_%j.output \
+  --dependency=afterany:${contamID} \
+  ${scriptDir}/scaffoldAssembly.slurm \
+    ${outdir}/scaffold \
+    ${outdir}/blobtools/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nA.fastq.gz)
+fullScaffoldID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Main Scaffolding job: ${fullScaffoldID}" #32282017
+
+## Gap Close
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/gapClose_%j.output \
+  --dependency=afterany:${fullScaffoldID} \
+  --cpus-per-task=24 \
+  --mem=100 \
+  ${scriptDir}/gapClose.slurm \
+    ${outdir}/gapClose \
+    ${outdir}/scaffold/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob_longstitch.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nA.fastq.gz)
+gapCloseID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Gap Closing job: ${gapCloseID}" #32282018
+
+## Finalize Assembly - testing right now
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/finalizeAssembly_%j.output \
+  --dependency=afterany:${gapCloseID} \
+  --cpus-per-task=24 \
+  --mem=100 \
+  ${scriptDir}/finishSC.slurm \
+    ${outdir}/finishAssembly \
+    ${outdir}/gapClose/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob_longstitch_gapClose.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nA.fastq.gz)
+finalizeSCID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Finalize SC job: ${finalizeSCID}" #32282912
+
+JOBID=$(sbatch \
+  --output=${outdir}/slurm/finalizeAssembly_r2_%j.output \
+  --dependency=afterany:${finalizeSCID} \
+  --cpus-per-task=24 \
+  --mem=100 \
+  ${scriptDir}/finishSC.slurm \
+    ${outdir}/finishAssembly \
+    ${outdir}/gapClose/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob_longstitch_gapClose.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nA.fastq.gz)
+finalizeSCID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Finalize SC job: ${finalizeSCID}" #32286610
+
+## Polish Assembly
+#### Polish with Long Reads
+JOBID=$(sbatch \
+  --dependency=afterany:${gapCloseID} \
+  --output=${outdir}/slurm/longreadPolish_scaffold_%j.output \
+  ${scriptDir}/polishNanopore.slurm \
+    ${outdir}/gapClose/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob_longstitch_gapClose.fasta \
+    ${outdir}/clean_nano/${genome_name}_nanopore_input_pc_nP.fastq.gz \
+    ${outdir}/longPolish/scaffold/1)
+longPolishScaffoldID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Long Read Polish of Scaffolds jobs: ${longPolishScaffoldID}" #32290305
+
+## Polish with Short Reads
+#### Map Short Reads to Genome
+JOBID=$(sbatch \
+  --dependency=afterany:${longPolishScaffoldID} \
+  --output=${outdir}/slurm/shortreadMap_forPilon_scaffold_%j.output \
+  ${scriptDir}/mapShortReads.slurm \
+    ${outdir}/longPolish/scaffold/1/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob_longstitch_gapClose_racon.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/scaffold/1)
+shortMapPolishScaffoldID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Short Read Mapping for Scaffolds jobs: ${shortMapPolishScaffoldID}" #32290313
+
+#### Array for Polishing
+JOBID=$(sbatch \
+  --dependency=afterany:${shortMapPolishScaffoldID} \
+  --array=0-$((100-1))%30 \
+  --output=${outdir}/slurm/shortreadPolish_scaffold_%A_%a.output \
+  ${scriptDir}/polishIllumina.slurm \
+    ${outdir}/longPolish/scaffold/1/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob_longstitch_gapClose_racon.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/scaffold/1)
+shortPolishScaffoldID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Short Read Polish for Scaffolds jobs: ${shortPolishScaffoldID}" #32290315
+
+#### Join Polished Assembly
+JOBID=$(sbatch \
+  --dependency=afterany:${shortPolishScaffoldID} \
+  --output=${outdir}/slurm/gatherPilon_scaffold_%j.output \
+  ${scriptDir}/gatherPilon.slurm \
+    ${outdir}/longPolish/scaffold/1/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob_longstitch_gapClose_racon.fasta \
+    ${fastq_files_fastp_fqscrn_repair_array[0]} \
+    ${outdir}/shortPolish/scaffold/1)
+pilonGatherScaffoldID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Pilon Collection for Scaffolds jobs: ${pilonGatherScaffoldID}" #32290317
+
+## Finalize Everything
+#Job to move the assembled genome & mito genome to the main folder and run quast/busco of the main genome
+#Also sort scaffolds/contigs by length and rename in order
+#Gather outputs and make figures/tables
+#
+JOBID=$(sbatch \
+  --dependency=afterany:${pilonGatherScaffoldID} \
+  --output=${outdir}/slurm/postAssembly_%j.output \
+  ${scriptDir}/postAssembly.slurm \
+    ${outdir} \
+    ${outdir}/shortPolish/scaffold/1/${genome_name}_longreads_flyeHQ_purgeDup_racon_racon_medaka_pilon_pilon_mec_mtRemove_blob_longstitch_gapClose_racon_pilon.fasta \
+    ${genome_name} \
+    1000)
+finalizeID=$(echo ${JOBID} | sed 's/[^0-9]*//g')
+echo "Submitted Pilon Collection for Scaffolds jobs: ${finalizeID}" #32290795
