@@ -1,6 +1,7 @@
 # Acerv_Genome
- Assemble the A. cervicornis genome and compare to other anthazoans. Code for Selwyn and Vollmer 20XX
+ Assemble the A. cervicornis genome and compare to other anthazoans. Code for [Selwyn and Vollmer 2023 G3](https://academic.oup.com/g3journal/advance-article/doi/10.1093/g3journal/jkad232/7296043)
 
+0. [Genome and Annotation Files](Genome_Annotation_output)
 1. [Genome Assembly Pipeline](Genome_Assembly_pipeline/genome_assembly.pipeline)
 2. [Transcript Assembly Pipeline](Genome_Assembly_pipeline/transcriptome_assembly.pipeline)
 3. [Genome Annotation Pipeline](Genome_Assembly_pipeline/maker.pipeline)
